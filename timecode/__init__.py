@@ -103,7 +103,7 @@ class Timecode(object):
 
         # check if number is passed and if so convert it to a string
         if isinstance(framerate, (int, float)):
-            framerate = str(round(framerate, 2))
+            framerate = str(framerate)
 
         # set the int_frame_rate
         if framerate == '29.97':
@@ -125,6 +125,12 @@ class Timecode(object):
             self._int_framerate = int(float(framerate))
 
         self._framerate = framerate
+
+    def set_fractional(self, state):
+        """Set or unset timecode to be represented with fractional seconds
+        :param bool state:
+        """
+        self.fraction_frame = state
 
     def set_timecode(self, timecode):
         """Sets the frames by using the given timecode
