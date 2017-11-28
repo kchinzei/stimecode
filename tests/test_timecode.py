@@ -951,6 +951,13 @@ class TimecodeTester(unittest.TestCase):
         self.assertEqual(tc1.frame_number, 40)
         self.assertEqual(tc2.frame_number, 1)
 
+        tc3 = Timecode(24, 421729315)
+        self.assertEqual(tc3.__repr__(), '19:23:14:23')
+        tc3.set_fractional(True)
+        self.assertEqual(tc3.__repr__(), '19:23:14.958')
+        tc3.set_fractional(False)
+        self.assertEqual(tc3.__repr__(), '19:23:14:23')
+
     def test_ge_overload(self):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
