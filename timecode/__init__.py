@@ -22,7 +22,7 @@
 # THE SOFTWARE.
 
 
-__version__ = '1.1.1'
+__version__ = '1.2.0'
 
 
 class Timecode(object):
@@ -47,7 +47,7 @@ class Timecode(object):
       When using 'ms' frame rate, timecodes like '00:11:01.040' use '.040'
       as frame number. When used with other frame rates, '.040' represents
       a fraction of a second. So '00:00:00.040'@25fps is 1 frame.
-    :type framerate: str or int or float
+    :type framerate: str or int or float or tuple
     :type start_timecode: str or None
     :param start_seconds: A float or integer value showing the seconds.
     :param int frames: Timecode objects can be initialized with an
@@ -94,8 +94,15 @@ class Timecode(object):
         """
 
         # Convert rational frame rate to float
+        numerator = None
+        denominator = None
         if isinstance(framerate, basestring) and '/' in framerate:
             numerator, denominator = framerate.split('/')
+
+        elif isinstance(framerate, tuple):
+            numerator, denominator = framerate
+
+        if numerator and denominator:
             framerate = round(float(numerator) / float(denominator), 2)
 
             if framerate.is_integer():
@@ -251,10 +258,10 @@ class Timecode(object):
 
     def tc_to_string(self, hrs, mins, secs, frs):
         if self.fraction_frame:
-            return "{hh:02d}:{mm:02d}:{ss:06.3f}" .format(hh=hrs,
-                                                          mm=mins,
-                                                          ss=secs + frs
-                                                          )
+            return "{hh:02d}:{mm:02d}:{ss:06.3f}".format(hh=hrs,
+                                                         mm=mins,
+                                                         ss=secs + frs
+                                                         )
 
         ff = "%02d"
         if self.ms_frame:
