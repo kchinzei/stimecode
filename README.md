@@ -47,15 +47,24 @@ You may also pass a big "Binary Coded Decimal" integer as start timecode:
     tc6 = Timecode('24', 421729315)
     assert repr(tc6) == '19:23:14:23'
 
-This is useful for parsing time codes stored in OpenEXR's and extracted through
+This is useful for parsing timecodes stored in OpenEXR's and extracted through
 OpenImageIO for instance.
 
 Timecode also supports passing start timecodes formatted like HH:MM:SS.sss where
-SS.sss is seconds and fractions of seconds. This is useful when working with
-tools like FFMpeg
+SS.sss is seconds and fractions of seconds:
 
-    tc7 = Timecode(25, '00:00:00.040')
-    assert tc7.frame_number == 1
+    tc8 = Timecode(25, '00:00:00.040')
+    assert tc8.frame_number == 1
+
+You may set any timecode to be represented as fractions of seconds:
+
+    tc9 = Timecode(24, '19:23:14:23')
+    assert repr(tc9) == '19:23:14:23'
+
+    tc9.set_fractional(True)
+    assert repr(tc9) == '19:23:14.958'
+
+Fraction of seconds is useful when working with tools like FFmpeg.
 
 
 The SMPTE standard limits the timecode with 24 hours. Even though, Timecode
