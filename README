@@ -39,26 +39,38 @@ Use the ``frame_number`` attribute if you want to get a 0 based frame number::
 Frame rates 29.97 and 59.94 are always drop frame, and all the others are non
 drop frame.
 
-The timecode library supports rational frame rates passed as a string::
+The timecode library supports rational frame rates passed as a either a string
+ or tuple::
 
     tc5 = Timecode('30000/1001', '00:00:00;00')
     assert tc5.framerate == '29.97'
 
+    tc6 = Timecode((30000, 1001), '00:00:00;00')
+    assert tc6.framerate == '29.97'
+
 You may also pass a big "Binary Coded Decimal" integer as start timecode::
 
-    tc6 = Timecode('24', 421729315)
-    assert repr(tc6) == '19:23:14:23'
+    tc7 = Timecode('24', 421729315)
+    assert repr(tc7) == '19:23:14:23'
 
-This is useful for parsing time codes stored in OpenEXR's and extracted through
+This is useful for parsing timecodes stored in OpenEXR's and extracted through
 OpenImageIO for instance.
 
 Timecode also supports passing start timecodes formatted like HH:MM:SS.sss where
 SS.sss is seconds and fractions of seconds::
 
-    tc7 = Timecode(25, '00:00:00.040')
-    assert tc7.frame_number == 1
+    tc8 = Timecode(25, '00:00:00.040')
+    assert tc8.frame_number == 1
 
-This is useful when working with tools like FFMpeg.
+You may set any timecode to be represented as fractions of seconds::
+
+    tc9 = Timecode(24, '19:23:14:23')
+    assert repr(tc9) == '19:23:14:23'
+
+    tc9.set_fractional(True)
+    assert repr(tc9) == '19:23:14.958'
+
+Fraction of seconds is useful when working with tools like FFmpeg.
 
 
 The SMPTE standard limits the timecode with 24 hours. Even though, Timecode
