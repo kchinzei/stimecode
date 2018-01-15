@@ -24,6 +24,10 @@
 
 __version__ = '1.2.0'
 
+try:
+  basestring
+except NameError:
+  basestring = str
 
 class Timecode(object):
     """The main timecode class.
