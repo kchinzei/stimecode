@@ -2,6 +2,18 @@
 Changes
 =======
 
+1.2.0
+=====
+* **NEW:** Support for passing a tuple with numerator and denominator when
+  passing rational framerate.
+
+* **NEW:** set_fractional method for setting whether or not to represent a
+  timecode as fractional seconds.
+
+* **Update:** Updated READEME's with info on new features
+
+* **FIX:** Some merge issues.
+
 1.1.0
 =====
 

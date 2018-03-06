@@ -62,6 +62,13 @@ class TimecodeTester(unittest.TestCase):
         Timecode('60000/1000', '00:00:00:00')
         Timecode('60000/1001', '00:00:00;00')
 
+        Timecode((24000, 1000), '00:00:00:00')
+        Timecode((24000, 1001), '00:00:00;00')
+        Timecode((30000, 1000), '00:00:00:00')
+        Timecode((30000, 1001), '00:00:00;00')
+        Timecode((60000, 1000), '00:00:00:00')
+        Timecode((60000, 1001), '00:00:00;00')
+
         Timecode(24, frames=12000)
         Timecode(23.98, '00:00:00:00')
         Timecode(24, '00:00:00:00')
@@ -186,7 +193,7 @@ class TimecodeTester(unittest.TestCase):
         parameters is zero.
         """
         with self.assertRaises(ValueError) as cm:
-            tc = Timecode('29.97', start_seconds=0)
+            Timecode('29.97', start_seconds=0)
 
         self.assertEqual(
             str(cm.exception),
@@ -927,6 +934,10 @@ class TimecodeTester(unittest.TestCase):
         self.assertEqual(tc.framerate, '59.94')
         self.assertEqual(tc._int_framerate, 60)
 
+        tc = Timecode((60000, 1001), '00:00:00;00')
+        self.assertEqual(tc.framerate, '59.94')
+        self.assertEqual(tc._int_framerate, 60)
+
     def test_rational_frame_delimiter(self):
         tc = Timecode('24000/1000', frames=1)
         self.assertFalse(';' in tc.__repr__())
@@ -950,6 +961,16 @@ class TimecodeTester(unittest.TestCase):
 
         self.assertEqual(tc1.frame_number, 40)
         self.assertEqual(tc2.frame_number, 1)
+
+    def test_toggle_fractional_frame(self):
+        tc = Timecode(24, 421729315)
+        self.assertEqual(tc.__repr__(), '19:23:14:23')
+
+        tc.set_fractional(True)
+        self.assertEqual(tc.__repr__(), '19:23:14.958')
+
+        tc.set_fractional(False)
+        self.assertEqual(tc.__repr__(), '19:23:14:23')
 
     def test_ge_overload(self):
         tc1 = Timecode(24, '00:00:00:00')

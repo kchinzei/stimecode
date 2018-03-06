@@ -22,8 +22,12 @@
 # THE SOFTWARE.
 
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
+try:
+  basestring
+except NameError:
+  basestring = str
 
 class Timecode(object):
     """The main timecode class.
@@ -47,7 +51,7 @@ class Timecode(object):
       When using 'ms' frame rate, timecodes like '00:11:01.040' use '.040'
       as frame number. When used with other frame rates, '.040' represents
       a fraction of a second. So '00:00:00.040'@25fps is 1 frame.
-    :type framerate: str or int or float
+    :type framerate: str or int or float or tuple
     :type start_timecode: str or None
     :param start_seconds: A float or integer value showing the seconds.
     :param int frames: Timecode objects can be initialized with an
@@ -94,8 +98,15 @@ class Timecode(object):
         """
 
         # Convert rational frame rate to float
+        numerator = None
+        denominator = None
         if isinstance(framerate, basestring) and '/' in framerate:
             numerator, denominator = framerate.split('/')
+
+        elif isinstance(framerate, tuple):
+            numerator, denominator = framerate
+
+        if numerator and denominator:
             framerate = round(float(numerator) / float(denominator), 2)
 
             if framerate.is_integer():
@@ -103,7 +114,7 @@ class Timecode(object):
 
         # check if number is passed and if so convert it to a string
         if isinstance(framerate, (int, float)):
-            framerate = str(round(framerate, 2))
+            framerate = str(framerate)
 
         # set the int_frame_rate
         if framerate == '29.97':
@@ -125,6 +136,12 @@ class Timecode(object):
             self._int_framerate = int(float(framerate))
 
         self._framerate = framerate
+
+    def set_fractional(self, state):
+        """Set or unset timecode to be represented with fractional seconds
+        :param bool state:
+        """
+        self.fraction_frame = state
 
     def set_timecode(self, timecode):
         """Sets the frames by using the given timecode
@@ -245,10 +262,10 @@ class Timecode(object):
 
     def tc_to_string(self, hrs, mins, secs, frs):
         if self.fraction_frame:
-            return "{hh:02d}:{mm:02d}:{ss:06.3f}" .format(hh=hrs,
-                                                          mm=mins,
-                                                          ss=secs + frs
-                                                          )
+            return "{hh:02d}:{mm:02d}:{ss:06.3f}".format(hh=hrs,
+                                                         mm=mins,
+                                                         ss=secs + frs
+                                                         )
 
         ff = "%02d"
         if self.ms_frame:
