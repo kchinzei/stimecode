@@ -29,6 +29,12 @@ try:
 except NameError:
   basestring = str
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
+
 class Timecode(object):
     """The main timecode class.
 
