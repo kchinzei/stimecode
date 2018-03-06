@@ -24,16 +24,6 @@
 
 __version__ = '1.2.0'
 
-try:
-  basestring
-except NameError:
-  basestring = str
-
-try:
-    basestring
-except NameError:
-    basestring = str
-
 
 class Timecode(object):
     """The main timecode class.
@@ -106,10 +96,15 @@ class Timecode(object):
         # Convert rational frame rate to float
         numerator = None
         denominator = None
-        if isinstance(framerate, basestring) and '/' in framerate:
-            numerator, denominator = framerate.split('/')
 
-        elif isinstance(framerate, tuple):
+        try:
+            if '/' in framerate:
+                numerator, denominator = framerate.split('/')
+        except TypeError:
+            # not a string
+            pass
+
+        if isinstance(framerate, tuple):
             numerator, denominator = framerate
 
         if numerator and denominator:
