@@ -462,6 +462,11 @@ class Timecode(object):
         """
         return self.frames - 1
 
+    @property
+    def float(self):
+        """returns the seconds as float
+        """
+        return self.frames / float(self.framerate)
 
 class TimecodeError(Exception):
     """Raised when an error occurred in timecode calculation
