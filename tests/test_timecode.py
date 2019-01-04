@@ -978,21 +978,52 @@ class TimecodeTester(unittest.TestCase):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
         tc3 = Timecode(24, '00:00:00:01')
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
 
         self.assertTrue(tc1 == tc2)
         self.assertTrue(tc1 >= tc2)
         self.assertTrue(tc3 >= tc2)
         self.assertFalse(tc2 >= tc3)
+        self.assertTrue(tc4 <= tc5)
+
+    def test_gt_overload(self):
+        tc1 = Timecode(24, '00:00:00:00')
+        tc2 = Timecode(24, '00:00:00:00')
+        tc3 = Timecode(24, '00:00:00:01')
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
+
+        self.assertFalse(tc1 > tc2)
+        self.assertFalse(tc2 > tc2)
+        self.assertTrue(tc3 > tc2)
+        self.assertTrue(tc5 > tc4)
 
     def test_le_overload(self):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
         tc3 = Timecode(24, '00:00:00:01')
-
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
+ 
         self.assertTrue(tc1 == tc2)
         self.assertTrue(tc1 <= tc2)
         self.assertTrue(tc2 <= tc3)
         self.assertFalse(tc2 >= tc3)
+        self.assertTrue(tc5 >= tc4)
+        self.assertTrue(tc5 > tc4)
+
+    def test_gt_overload(self):
+        tc1 = Timecode(24, '00:00:00:00')
+        tc2 = Timecode(24, '00:00:00:00')
+        tc3 = Timecode(24, '00:00:00:01')
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
+
+        self.assertFalse(tc1 < tc2)
+        self.assertFalse(tc2 < tc2)
+        self.assertTrue(tc2 < tc3)
+        self.assertTrue(tc4 < tc5)
 
 
     # def test_exceptions(self):
@@ -1100,3 +1131,6 @@ class TimecodeTester(unittest.TestCase):
     #         "Type str not supported for arithmetic.",
     #         cm.exception.__str__()
     #     )
+
+if __name__ == '__main__':
+    unittest.main()
