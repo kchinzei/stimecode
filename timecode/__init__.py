@@ -361,6 +361,17 @@ class Timecode(object):
         elif isinstance(other, int):
             return self.frames >= other
 
+    def __gt__(self, other):
+        """override greater operator"""
+        if isinstance(other, Timecode):
+            return self._framerate == other._framerate and \
+                self.frames > other.frames
+        elif isinstance(other, str):
+            new_tc = Timecode(self._framerate, other)
+            return self.frames > new_tc.frames
+        elif isinstance(other, int):
+            return self.frames > other
+
     def __le__(self, other):
         """override less or equal to operator"""
         if isinstance(other, Timecode):
@@ -371,6 +382,17 @@ class Timecode(object):
             return self.frames <= new_tc.frames
         elif isinstance(other, int):
             return self.frames <= other
+        
+    def __lt__(self, other):
+        """override less operator"""
+        if isinstance(other, Timecode):
+            return self._framerate == other._framerate and \
+                self.frames < other.frames
+        elif isinstance(other, str):
+            new_tc = Timecode(self._framerate, other)
+            return self.frames < new_tc.frames
+        elif isinstance(other, int):
+            return self.frames < other
 
     def __add__(self, other):
         """returns new Timecode instance with the given timecode or frames
