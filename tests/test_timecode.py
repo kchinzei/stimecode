@@ -356,81 +356,83 @@ class TimecodeTester(unittest.TestCase):
 
     def test_iteration(self):
         tc = Timecode('29.97', '03:36:09;23')
-        self.assertEqual("03:36:09;23", tc)
+        assert tc == "03:36:09;23"
+
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:11;23", t)
-        self.assertEqual(388764, tc.frames)
+
+        assert t == "03:36:11;23"
+        assert tc.frames == 388764
 
         tc = Timecode('29.97', '03:36:09;23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:11;23", t)
+        assert t == "03:36:11;23"
         self.assertEqual(388764, tc.frames)
 
         tc = Timecode('30', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:11:23", t)
+        assert t == "03:36:11:23"
         self.assertEqual(389154, tc.frames)
 
         tc = Timecode('25', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:12:08", t)
+        assert t == "03:36:12:08"
         self.assertEqual(324309, tc.frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:10;23", t)
+        assert t == "03:36:10;23"
         self.assertEqual(777444, tc.frames)
 
         tc = Timecode('60', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:10:23", t)
+        assert t == "03:36:10:23"
         self.assertEqual(778224, tc.frames)
 
         tc = Timecode('59.94', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:10:23", t)
+        assert t == "03:36:10:23"
         self.assertEqual(777444, tc.frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:12:11", t)
+        assert t == "03:36:12:11"
         self.assertEqual(311340, tc.frames)
 
         tc = Timecode('24', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("03:36:12:11", t)
+        assert t == "03:36:12:11"
         self.assertEqual(311340, tc.frames)
 
         tc = Timecode('ms', '03:36:09.230')
         for x in range(60):
             t = tc.next()
             self.assertIsNotNone(t)
-        self.assertEqual('03:36:09.290', t)
+        assert t == '03:36:09.290'
         self.assertEqual(12969291, tc.frames)
 
         tc = Timecode('24', frames=12000)
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
-        self.assertEqual("00:08:22:11", t)
+        assert t == "00:08:22:11"
         self.assertEqual(12060, tc.frames)
 
     def test_op_overloads_add(self):
@@ -513,7 +515,7 @@ class TimecodeTester(unittest.TestCase):
 
         tc = Timecode('23.98', '03:36:09:23')
         tc2 = Timecode('23.98', '00:00:29:23')
-        self.assertEqual(720, tc2)
+        self.assertEqual(720, tc2.frames)
         d = tc + tc2
         f = tc + 720
         self.assertEqual("03:36:39:23", d.__str__())
@@ -550,7 +552,7 @@ class TimecodeTester(unittest.TestCase):
         tc3 = tc1 + tc2
         self.assertEqual('29.97', tc3.framerate)
         self.assertEqual(12, tc3.frames)
-        self.assertEqual('00:00:00;11', tc3)
+        assert tc3 == '00:00:00;11'
 
     def test_frame_number_attribute_value_is_correctly_calculated(self):
         """testing if the Timecode.frame_number attribute is correctly
@@ -976,21 +978,52 @@ class TimecodeTester(unittest.TestCase):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
         tc3 = Timecode(24, '00:00:00:01')
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
 
         self.assertTrue(tc1 == tc2)
         self.assertTrue(tc1 >= tc2)
         self.assertTrue(tc3 >= tc2)
         self.assertFalse(tc2 >= tc3)
+        self.assertTrue(tc4 <= tc5)
+
+    def test_gt_overload(self):
+        tc1 = Timecode(24, '00:00:00:00')
+        tc2 = Timecode(24, '00:00:00:00')
+        tc3 = Timecode(24, '00:00:00:01')
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
+
+        self.assertFalse(tc1 > tc2)
+        self.assertFalse(tc2 > tc2)
+        self.assertTrue(tc3 > tc2)
+        self.assertTrue(tc5 > tc4)
 
     def test_le_overload(self):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
         tc3 = Timecode(24, '00:00:00:01')
-
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
+ 
         self.assertTrue(tc1 == tc2)
         self.assertTrue(tc1 <= tc2)
         self.assertTrue(tc2 <= tc3)
         self.assertFalse(tc2 >= tc3)
+        self.assertTrue(tc5 >= tc4)
+        self.assertTrue(tc5 > tc4)
+
+    def test_gt_overload(self):
+        tc1 = Timecode(24, '00:00:00:00')
+        tc2 = Timecode(24, '00:00:00:00')
+        tc3 = Timecode(24, '00:00:00:01')
+        tc4 = Timecode(24, '00:00:01.100')
+        tc5 = Timecode(24, '00:00:01.200')
+
+        self.assertFalse(tc1 < tc2)
+        self.assertFalse(tc2 < tc2)
+        self.assertTrue(tc2 < tc3)
+        self.assertTrue(tc4 < tc5)
 
 
     # def test_exceptions(self):
@@ -1098,3 +1131,6 @@ class TimecodeTester(unittest.TestCase):
     #         "Type str not supported for arithmetic.",
     #         cm.exception.__str__()
     #     )
+
+if __name__ == '__main__':
+    unittest.main()

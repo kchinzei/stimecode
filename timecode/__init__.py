@@ -24,10 +24,6 @@
 
 __version__ = '1.2.0'
 
-try:
-  basestring
-except NameError:
-  basestring = str
 
 class Timecode(object):
     """The main timecode class.
@@ -100,10 +96,15 @@ class Timecode(object):
         # Convert rational frame rate to float
         numerator = None
         denominator = None
-        if isinstance(framerate, basestring) and '/' in framerate:
-            numerator, denominator = framerate.split('/')
 
-        elif isinstance(framerate, tuple):
+        try:
+            if '/' in framerate:
+                numerator, denominator = framerate.split('/')
+        except TypeError:
+            # not a string
+            pass
+
+        if isinstance(framerate, tuple):
             numerator, denominator = framerate
 
         if numerator and denominator:
@@ -360,6 +361,17 @@ class Timecode(object):
         elif isinstance(other, int):
             return self.frames >= other
 
+    def __gt__(self, other):
+        """override greater operator"""
+        if isinstance(other, Timecode):
+            return self._framerate == other._framerate and \
+                self.frames > other.frames
+        elif isinstance(other, str):
+            new_tc = Timecode(self._framerate, other)
+            return self.frames > new_tc.frames
+        elif isinstance(other, int):
+            return self.frames > other
+
     def __le__(self, other):
         """override less or equal to operator"""
         if isinstance(other, Timecode):
@@ -370,6 +382,17 @@ class Timecode(object):
             return self.frames <= new_tc.frames
         elif isinstance(other, int):
             return self.frames <= other
+        
+    def __lt__(self, other):
+        """override less operator"""
+        if isinstance(other, Timecode):
+            return self._framerate == other._framerate and \
+                self.frames < other.frames
+        elif isinstance(other, str):
+            new_tc = Timecode(self._framerate, other)
+            return self.frames < new_tc.frames
+        elif isinstance(other, int):
+            return self.frames < other
 
     def __add__(self, other):
         """returns new Timecode instance with the given timecode or frames
@@ -461,6 +484,11 @@ class Timecode(object):
         """
         return self.frames - 1
 
+    @property
+    def float(self):
+        """returns the seconds as float
+        """
+        return self.frames / float(self.framerate)
 
 class TimecodeError(Exception):
     """Raised when an error occurred in timecode calculation
