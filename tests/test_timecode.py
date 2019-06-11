@@ -97,7 +97,7 @@ class TimecodeTester(unittest.TestCase):
         Timecode(1000)
         Timecode(24, frames=12000)
 
-    def test_2398_vs_23776(self):
+    def test_2398_vs_23976(self):
         timeobj1 = Timecode('23.98', '04:01:45:23')
         timeobj2 = Timecode('23.976', '04:01:45:23')
         self.assertEqual(timeobj1.frames, timeobj2.frames)
