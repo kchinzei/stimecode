@@ -22,7 +22,7 @@
 # THE SOFTWARE.
 
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 class Timecode(object):
@@ -33,8 +33,9 @@ class Timecode(object):
     using the frame rate setting.
 
     :param framerate: The frame rate of the Timecode instance. It
-      should be one of ['23.98', '24', '25', '29.97', '30', '50', '59.94',
-      '60', 'NUMERATOR/DENOMINATOR', ms'] where "ms" equals to 1000 fps.
+      should be one of ['23.976', '23.98', '24', '25', '29.97', '30', '50', 
+      '59.94', '60', 'NUMERATOR/DENOMINATOR', ms'] where "ms" equals to 
+      1000 fps.
       Can not be skipped.
       Setting the framerate will automatically set the :attr:`.drop_frame`
       attribute to correct value.
@@ -124,7 +125,7 @@ class Timecode(object):
         elif framerate == '59.94':
             self._int_framerate = 60
             self.drop_frame = True
-        elif framerate == '23.98':
+        elif framerate in ['23.976', '23.98']:
             framerate = '24'
             self._int_framerate = 24
         elif framerate in ['ms', '1000']:

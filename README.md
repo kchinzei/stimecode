@@ -1,8 +1,8 @@
 About
 -----
 
-Python Module for manipulating SMPTE timecode. Supports 23.98, 24, 25, 29.97,
-30, 50, 59.94, 60 frame rates and milliseconds (1000 fps).
+Python Module for manipulating SMPTE timecode. Supports 23.976, 23.98, 24, 25, 
+29.97, 30, 50, 59.94, 60 frame rates and milliseconds (1000 fps).
 
 This library is a fork of the original PyTimeCode python library. You should
 not use the two library together (PyTimeCode is not maintained and has known
