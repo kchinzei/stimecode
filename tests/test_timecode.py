@@ -24,6 +24,7 @@ class TimecodeTester(unittest.TestCase):
     def test_instance_creation(self):
         """test instance creation, none of these should raise any error
         """
+        Timecode('23.976', '00:00:00:00')
         Timecode('23.98', '00:00:00:00')
         Timecode('24', '00:00:00:00')
         Timecode('25', '00:00:00:00')
@@ -35,6 +36,7 @@ class TimecodeTester(unittest.TestCase):
         Timecode('ms', '03:36:09.230')
         Timecode('24', start_timecode=None, frames=12000)
 
+        Timecode('23.976')
         Timecode('23.98')
         Timecode('24')
         Timecode('25')
@@ -45,6 +47,7 @@ class TimecodeTester(unittest.TestCase):
         Timecode('60')
         Timecode('ms')
 
+        Timecode('23.976', 421729315)
         Timecode('23.98', 421729315)
         Timecode('24', 421729315)
         Timecode('25', 421729315)
@@ -70,6 +73,7 @@ class TimecodeTester(unittest.TestCase):
         Timecode((60000, 1001), '00:00:00;00')
 
         Timecode(24, frames=12000)
+        Timecode(23.976, '00:00:00:00')
         Timecode(23.98, '00:00:00:00')
         Timecode(24, '00:00:00:00')
         Timecode(25, '00:00:00:00')
@@ -81,6 +85,7 @@ class TimecodeTester(unittest.TestCase):
         Timecode(1000, '03:36:09.230')
         Timecode(24, start_timecode=None, frames=12000)
 
+        Timecode(23.976)
         Timecode(23.98)
         Timecode(24)
         Timecode(25)
@@ -91,6 +96,12 @@ class TimecodeTester(unittest.TestCase):
         Timecode(60)
         Timecode(1000)
         Timecode(24, frames=12000)
+
+    def test_2398_vs_23776(self):
+        timeobj1 = Timecode('23.98', '04:01:45:23')
+        timeobj2 = Timecode('23.976', '04:01:45:23')
+        self.assertEqual(timeobj1.frames, timeobj2.frames)
+        self.assertEqual(repr(timeobj1), repr(timeobj2))
 
     def test_repr_overload(self):
         timeobj = Timecode('24', '01:00:00:00')

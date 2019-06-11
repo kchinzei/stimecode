@@ -2,6 +2,10 @@
 Changes
 =======
 
+1.2.1
+=====
+* **Update:** Added support for 23.976 fps which is a common variation of 23.98.
+
 1.2.0
 =====
 * **NEW:** Support for passing a tuple with numerator and denominator when
