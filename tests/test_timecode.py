@@ -217,10 +217,6 @@ class TimecodeTester(unittest.TestCase):
         self.assertEqual('19:23:14;23', tc.__str__())
         self.assertTrue(tc.drop_frame)
 
-        tc = Timecode('29.97', 421729315, force_non_drop_frame=True)
-        self.assertEqual('19:23:14:23', tc.__str__())
-        self.assertTrue(tc.drop_frame)
-
     def test_start_seconds_argument_is_zero(self):
         """testing if a ValueError will be raised when the start_seconds
         parameters is zero.
