@@ -20,17 +20,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from decimal import Decimal, ROUND_HALF_UP
 
 __version__ = '1.2.1'
-
-
-def school_math_round(num):
-    """
-    Try built in round(2.5) and then use this method instead... Why? Not sure,
-    but this is right, for the moment at least.
-    """
-    return int(Decimal(num).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
 class Timecode(object):
@@ -230,7 +221,7 @@ class Timecode(object):
             # FIXME: Not sure what to do when new frame number is fractional.
             #  Currently we're just flooring the result, but not sure what we
             #  should do yet. TBD.
-            frame_number = school_math_round(
+            frame_number = round(
                 frame_number * (float(self._framerate)/float(ifps)))
 
         frames = frame_number + 1
