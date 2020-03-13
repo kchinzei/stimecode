@@ -159,13 +159,10 @@ class TimecodeTester(unittest.TestCase):
         tc = Timecode('29.97', '03:36:09;23')
         self.assertEqual(388704, tc.frames)
 
-        tc = Timecode('29.97', '03:36:09;23', force_non_drop_frame=True)
-        self.assertEqual(388704, tc.frames)
+        tc = Timecode('29.97', '03:36:09:23', force_non_drop_frame=True)
+        self.assertEqual(388705, tc.frames)
 
         tc = Timecode('29.97', '03:36:09;23')
-        self.assertEqual(388704, tc.frames)
-
-        tc = Timecode('29.97', '03:36:09;23', force_non_drop_frame=True)
         self.assertEqual(388704, tc.frames)
 
         tc = Timecode('30', '03:36:09:23')
