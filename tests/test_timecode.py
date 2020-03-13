@@ -202,7 +202,7 @@ class TimecodeTester(unittest.TestCase):
         self.assertEqual('00:00:00;00', tc.__str__())
 
         tc = Timecode('29.97', frames=2589409, force_non_drop_frame=True)
-        self.assertEqual('00:00:00;00', tc.__str__())
+        self.assertEqual('00:00:00:00', tc.__str__())
 
         tc = Timecode('59.94', frames=5178816)
         self.assertEqual('23:59:59;59', tc.__str__())
@@ -218,7 +218,7 @@ class TimecodeTester(unittest.TestCase):
         self.assertTrue(tc.drop_frame)
 
         tc = Timecode('29.97', 421729315, force_non_drop_frame=True)
-        self.assertEqual('19:23:14;23', tc.__str__())
+        self.assertEqual('19:23:14:23', tc.__str__())
         self.assertTrue(tc.drop_frame)
 
     def test_start_seconds_argument_is_zero(self):
@@ -402,15 +402,13 @@ class TimecodeTester(unittest.TestCase):
         assert t == "03:36:11;23"
         assert tc.frames == 388764
 
-
-
         # tc = Timecode('29.97', '03:36:09;23', force_drop_frame_to=False)
         # assert tc == '03:36:09;23'
 
         # for x in range(60):
         #     t = tc.next()
         #     self.assertTrue(t)
-        
+
         # assert t == ''
         # assert tc.frames == 388764
 
@@ -1054,7 +1052,7 @@ class TimecodeTester(unittest.TestCase):
         tc3 = Timecode(24, '00:00:00:01')
         tc4 = Timecode(24, '00:00:01.100')
         tc5 = Timecode(24, '00:00:01.200')
- 
+
         self.assertTrue(tc1 == tc2)
         self.assertTrue(tc1 <= tc2)
         self.assertTrue(tc2 <= tc3)
