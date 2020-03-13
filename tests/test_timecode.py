@@ -114,7 +114,7 @@ class TimecodeTester(unittest.TestCase):
         self.assertEqual('00:08:59;28', timeobj.__repr__())
 
         timeobj = Timecode('29.97', '00:09:00:00', force_non_drop_frame=True)
-        self.assertEqual('00:08:59:13', timeobj.__repr__())
+        self.assertEqual('00:08:59:14', timeobj.__repr__())
 
         timeobj = Timecode('30', '00:10:00:00')
         self.assertEqual('00:10:00:00', timeobj.__repr__())
