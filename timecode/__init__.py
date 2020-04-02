@@ -33,8 +33,8 @@ class Timecode(object):
     using the frame rate setting.
 
     :param framerate: The frame rate of the Timecode instance. It
-      should be one of ['23.976', '23.98', '24', '25', '29.97', '30', '50', 
-      '59.94', '60', 'NUMERATOR/DENOMINATOR', ms'] where "ms" equals to 
+      should be one of ['23.976', '23.98', '24', '25', '29.97', '30', '50',
+      '59.94', '60', 'NUMERATOR/DENOMINATOR', ms'] where "ms" equals to
       1000 fps.
       Can not be skipped.
       Setting the framerate will automatically set the :attr:`.drop_frame`
@@ -56,10 +56,10 @@ class Timecode(object):
     """
 
     def __init__(self, framerate, start_timecode=None, start_seconds=None,
-                 frames=None):
+                 frames=None, fractional=False):
         self.drop_frame = False
         self.ms_frame = False
-        self.fraction_frame = False
+        self.fraction_frame = fractional
         self._int_framerate = None
         self._framerate = None
         self.framerate = framerate
@@ -383,7 +383,7 @@ class Timecode(object):
             return self.frames <= new_tc.frames
         elif isinstance(other, int):
             return self.frames <= other
-        
+
     def __lt__(self, other):
         """override less operator"""
         if isinstance(other, Timecode):
