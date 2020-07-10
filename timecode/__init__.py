@@ -20,9 +20,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
+import math
+from decimal import Decimal, ROUND_HALF_UP
 
 __version__ = '1.2.1'
+
+
+def school_math_round(num):
+    """
+    Try built in round(2.5) and then use this method instead... Why? Not sure,
+    but this is right, for the moment at least.
+    """
+    return int(Decimal(num).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
 class Timecode(object):
@@ -53,11 +62,16 @@ class Timecode(object):
     :param start_seconds: A float or integer value showing the seconds.
     :param int frames: Timecode objects can be initialized with an
       integer number showing the total frames.
+    :param force_non_drop_frame: If True, uses Non-Dropframe calculation for
+      29.97 or 59.94 only. Has no meaning for any other framerate.
     """
 
     def __init__(self, framerate, start_timecode=None, start_seconds=None,
-                 frames=None, fractional=False):
+                 frames=None, fractional=False, force_non_drop_frame=False):
+
+        self.force_non_drop_frame = force_non_drop_frame
         self.drop_frame = False
+
         self.ms_frame = False
         self.fraction_frame = fractional
         self._int_framerate = None
@@ -121,10 +135,16 @@ class Timecode(object):
         # set the int_frame_rate
         if framerate == '29.97':
             self._int_framerate = 30
-            self.drop_frame = True
+            if self.force_non_drop_frame is True:
+                self.drop_frame = False
+            else:
+                self.drop_frame = True
         elif framerate == '59.94':
             self._int_framerate = 60
-            self.drop_frame = True
+            if self.force_non_drop_frame is True:
+                self.drop_frame = False
+            else:
+                self.drop_frame = True
         elif framerate in ['23.976', '23.98']:
             framerate = '24'
             self._int_framerate = 24
@@ -203,7 +223,18 @@ class Timecode(object):
              (ifps * seconds) + frames) - \
             (drop_frames * (total_minutes - (total_minutes // 10)))
 
-        frames = frame_number + 1
+        # Special case correction for 29.97 NDF (Non-Dropframe)
+        if self._framerate in {'29.97', '59.94'} and self.drop_frame is False:
+            # Correct for using 30 fps calculation, by converting it to 29.97
+            #   or from 60 fps calculation, by converting it to 59.94
+            # FIXME: Not sure what to do when new frame number is fractional.
+            #  Currently we're just flooring the result, but not sure what we
+            #  should do yet. TBD.
+            corrected_frame_number = frame_number * (ffps / float(ifps))
+            frames = math.ceil(corrected_frame_number) + 1
+
+        else:
+            frames = frame_number + 1
 
         return frames
 
@@ -256,9 +287,9 @@ class Timecode(object):
         if self.fraction_frame:
             frs = round(frs / float(ifps), 3)
 
-        secs = (frame_number // ifps) % 60
-        mins = ((frame_number // ifps) // 60) % 60
-        hrs = (((frame_number // ifps) // 60) // 60)
+        secs = int((frame_number // ifps) % 60)
+        mins = int(((frame_number // ifps) // 60) % 60)
+        hrs = int((((frame_number // ifps) // 60) // 60))
 
         return hrs, mins, secs, frs
 
