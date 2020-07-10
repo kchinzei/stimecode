@@ -67,13 +67,14 @@ class Timecode(object):
     """
 
     def __init__(self, framerate, start_timecode=None, start_seconds=None,
-                 frames=None, fractional=False, force_non_drop_frame=False):
+                 frames=None, force_non_drop_frame=False):
 
         self.force_non_drop_frame = force_non_drop_frame
+
         self.drop_frame = False
 
         self.ms_frame = False
-        self.fraction_frame = fractional
+        self.fraction_frame = False
         self._int_framerate = None
         self._framerate = None
         self.framerate = framerate
@@ -88,8 +89,8 @@ class Timecode(object):
             if frames is not None:  # because 0==False, and frames can be 0
                 self.frames = frames
             elif start_seconds is not None:
-                #if start_seconds == 0:
-                #    raise ValueError("``start_seconds`` argument can not be 0")
+                if start_seconds == 0:
+                    raise ValueError("``start_seconds`` argument can not be 0")
                 self.frames = self.float_to_tc(start_seconds)
             else:
                 # use default value of 00:00:00:00
