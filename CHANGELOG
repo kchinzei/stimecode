@@ -2,6 +2,14 @@
 Changes
 =======
 
+1.2.2
+=====
+* **Fix:** Fixed ``Timecode.parse_timecode`` for int inputs.
+* **Update:** ``Timecode`` now accepts a ``fractional`` bool argument that
+  forces the timecode to be fractional.
+* **Update:** ``Timecode`` now accepts a ```force_non_drop_frame`` argument
+  that forces the timecode to be non-drop frame.
+
 1.2.1
 =====
 * **Update:** Added support for 23.976 fps which is a common variation of 23.98.

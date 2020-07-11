@@ -23,7 +23,7 @@
 import math
 from decimal import Decimal, ROUND_HALF_UP
 
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 
 def school_math_round(num):
@@ -317,8 +317,10 @@ class Timecode(object):
         milliseconds/fractionofseconds '00:00:00.000'
         """
         if isinstance(timecode, int):
-            indices = range(2, 10, 2)
-            hrs, mins, secs, frs = [hex(timecode)[i:i + 2] for i in indices]
+            hex_repr = hex(timecode)
+            # fix short string
+            hex_repr = '0x%s' % (hex_repr[2:].zfill(8))
+            hrs, mins, secs, frs = tuple(map(int, [hex_repr[i:i + 2] for i in range(2, 10, 2)]))
 
         else:
             bfr = timecode.replace(';', ':').replace('.', ':').split(':')

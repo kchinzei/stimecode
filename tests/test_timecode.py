@@ -1068,6 +1068,11 @@ class TimecodeTester(unittest.TestCase):
         self.assertTrue(tc2 < tc3)
         self.assertTrue(tc4 < tc5)
 
+    def test_parse_timecode_with_int(self):
+        """tests parse_timecode method with int input
+        """
+        result = Timecode.parse_timecode(16663)
+        self.assertTrue(result == (0, 0, 41, 17))  # issue #16
 
     # def test_exceptions(self):
     #     """test exceptions
