@@ -2,6 +2,11 @@
 Changes
 =======
 
+1.2.2.1
+=======
+* **Fix:** Fixed the ``CHANGELOG.rst`` and ``setup.py`` to be able to properly
+  package and upload to PyPI.
+
 1.2.2
 =====
 * **Fix:** Fixed ``Timecode.parse_timecode`` for int inputs.
@@ -22,7 +27,7 @@ Changes
 * **NEW:** set_fractional method for setting whether or not to represent a
   timecode as fractional seconds.
 
-* **Update:** Updated READEME's with info on new features
+* **Update:** Updated README's with info on new features
 
 * **FIX:** Some merge issues.
 
@@ -39,7 +44,7 @@ Changes
 =====
 
 * **Update:** To prevent confusion, passing 0 for ``start_seconds`` argument
-  will raise a ValueError now in ``Timecode.__init__` method.
+  will raise a ValueError now in ``Timecode.__init__`` method.
 
 1.0.0
 =====

@@ -23,7 +23,7 @@
 import math
 from decimal import Decimal, ROUND_HALF_UP
 
-__version__ = '1.2.2'
+__version__ = '1.2.2.1'
 
 
 def school_math_round(num):
@@ -523,7 +523,8 @@ class Timecode(object):
     def float(self):
         """returns the seconds as float
         """
-        return self.frames / float(self.framerate)
+        return float(self.frames) / float(self.framerate)
+
 
 class TimecodeError(Exception):
     """Raised when an error occurred in timecode calculation
