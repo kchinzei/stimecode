@@ -2,6 +2,15 @@
 Changes
 =======
 
+1.2.3
+=====
+* **Update:** Passing ``frames=0`` will now raise a ValueError. This hopefully
+  will clarify the usage of the TimeCode as a duration. If there is no
+  duration, hence the ``frames=0``, meaning that the number of frames of the
+  duration that this TimeCode represents is 0, which is meaningless.
+* **Update:** Also added some validation for the ``frames`` property
+  (oh yes it is a property now).
+
 1.2.2.1
 =======
 * **Fix:** Fixed the ``CHANGELOG.rst`` and ``setup.py`` to be able to properly

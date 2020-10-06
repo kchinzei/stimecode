@@ -100,7 +100,7 @@ class TimecodeTester(unittest.TestCase):
     def test_2398_vs_23976(self):
         timeobj1 = Timecode('23.98', '04:01:45:23')
         timeobj2 = Timecode('23.976', '04:01:45:23')
-        self.assertEqual(timeobj1.frames, timeobj2.frames)
+        self.assertEqual(timeobj1._frames, timeobj2._frames)
         self.assertEqual(repr(timeobj1), repr(timeobj2))
 
     def test_repr_overload(self):
@@ -142,49 +142,49 @@ class TimecodeTester(unittest.TestCase):
         """
         tc = Timecode('29.97')
         self.assertEqual('00:00:00;00', tc.__str__())
-        self.assertEqual(1, tc.frames)
+        self.assertEqual(1, tc._frames)
 
         tc = Timecode('29.97', force_non_drop_frame=True)
         self.assertEqual('00:00:00:00', tc.__str__())
-        self.assertEqual(1, tc.frames)
+        self.assertEqual(1, tc._frames)
 
         tc = Timecode('29.97', force_non_drop_frame=True)
 
         tc = Timecode('29.97', '00:00:00;01')
-        self.assertEqual(2, tc.frames)
+        self.assertEqual(2, tc._frames)
 
         tc = Timecode('29.97', '00:00:00:01', force_non_drop_frame=True)
-        self.assertEqual(2, tc.frames)
+        self.assertEqual(2, tc._frames)
 
         tc = Timecode('29.97', '03:36:09;23')
-        self.assertEqual(388704, tc.frames)
+        self.assertEqual(388704, tc._frames)
 
         tc = Timecode('29.97', '03:36:09:23', force_non_drop_frame=True)
-        self.assertEqual(388705, tc.frames)
+        self.assertEqual(388705, tc._frames)
 
         tc = Timecode('29.97', '03:36:09;23')
-        self.assertEqual(388704, tc.frames)
+        self.assertEqual(388704, tc._frames)
 
         tc = Timecode('30', '03:36:09:23')
-        self.assertEqual(389094, tc.frames)
+        self.assertEqual(389094, tc._frames)
 
         tc = Timecode('25', '03:36:09:23')
-        self.assertEqual(324249, tc.frames)
+        self.assertEqual(324249, tc._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
-        self.assertEqual(777384, tc.frames)
+        self.assertEqual(777384, tc._frames)
 
         tc = Timecode('60', '03:36:09:23')
-        self.assertEqual(778164, tc.frames)
+        self.assertEqual(778164, tc._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
-        self.assertEqual(777384, tc.frames)
+        self.assertEqual(777384, tc._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
-        self.assertEqual(311280, tc.frames)
+        self.assertEqual(311280, tc._frames)
 
         tc = Timecode('24', '03:36:09:23')
-        self.assertEqual(311280, tc.frames)
+        self.assertEqual(311280, tc._frames)
 
         tc = Timecode('ms', '03:36:09.230')
         self.assertEqual(3, tc.hrs)
@@ -308,31 +308,31 @@ class TimecodeTester(unittest.TestCase):
         """testing if timecode to frame conversion is ok in 2997
         """
         tc = Timecode('29.97', '00:00:00;00')
-        self.assertEqual(tc.frames, 1)
+        self.assertEqual(tc._frames, 1)
 
         tc = Timecode('29.97', '00:00:00;21')
-        self.assertEqual(tc.frames, 22)
+        self.assertEqual(tc._frames, 22)
 
         tc = Timecode('29.97', '00:00:00;29')
-        self.assertEqual(tc.frames, 30)
+        self.assertEqual(tc._frames, 30)
 
         tc = Timecode('29.97', '00:00:00;60')
-        self.assertEqual(tc.frames, 61)
+        self.assertEqual(tc._frames, 61)
 
         tc = Timecode('29.97', '00:00:01;00')
-        self.assertEqual(tc.frames, 31)
+        self.assertEqual(tc._frames, 31)
 
         tc = Timecode('29.97', '00:00:10;00')
-        self.assertEqual(tc.frames, 301)
+        self.assertEqual(tc._frames, 301)
 
         # test with non existing timecodes
         tc = Timecode('29.97', '00:01:00;00')
-        self.assertEqual(1799, tc.frames)
+        self.assertEqual(1799, tc._frames)
         self.assertEqual('00:00:59;28', tc.__str__())
 
         # test the limit
         tc = Timecode('29.97', '23:59:59;29')
-        self.assertEqual(2589408, tc.frames)
+        self.assertEqual(2589408, tc._frames)
 
     def test_force_drop_frame_to_false(self):
         tc = Timecode('29.97', '01:00:00:00', force_non_drop_frame=True)
@@ -396,7 +396,7 @@ class TimecodeTester(unittest.TestCase):
             self.assertTrue(t)
 
         assert t == "03:36:11;23"
-        assert tc.frames == 388764
+        assert tc._frames == 388764
 
         # tc = Timecode('29.97', '03:36:09;23', force_drop_frame_to=False)
         # assert tc == '03:36:09;23'
@@ -413,70 +413,70 @@ class TimecodeTester(unittest.TestCase):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:11;23"
-        self.assertEqual(388764, tc.frames)
+        self.assertEqual(388764, tc._frames)
 
         tc = Timecode('30', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:11:23"
-        self.assertEqual(389154, tc.frames)
+        self.assertEqual(389154, tc._frames)
 
         tc = Timecode('25', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:12:08"
-        self.assertEqual(324309, tc.frames)
+        self.assertEqual(324309, tc._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:10;23"
-        self.assertEqual(777444, tc.frames)
+        self.assertEqual(777444, tc._frames)
 
         tc = Timecode('60', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:10:23"
-        self.assertEqual(778224, tc.frames)
+        self.assertEqual(778224, tc._frames)
 
         tc = Timecode('59.94', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:10:23"
-        self.assertEqual(777444, tc.frames)
+        self.assertEqual(777444, tc._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:12:11"
-        self.assertEqual(311340, tc.frames)
+        self.assertEqual(311340, tc._frames)
 
         tc = Timecode('24', '03:36:09:23')
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "03:36:12:11"
-        self.assertEqual(311340, tc.frames)
+        self.assertEqual(311340, tc._frames)
 
         tc = Timecode('ms', '03:36:09.230')
         for x in range(60):
             t = tc.next()
             self.assertIsNotNone(t)
         assert t == '03:36:09.290'
-        self.assertEqual(12969291, tc.frames)
+        self.assertEqual(12969291, tc._frames)
 
         tc = Timecode('24', frames=12000)
         for x in range(60):
             t = tc.next()
             self.assertTrue(t)
         assert t == "00:08:22:11"
-        self.assertEqual(12060, tc.frames)
+        self.assertEqual(12060, tc._frames)
 
     def test_op_overloads_add(self):
         tc = Timecode('29.97', '03:36:09;23')
@@ -484,107 +484,107 @@ class TimecodeTester(unittest.TestCase):
         d = tc + tc2
         f = tc + 894
         self.assertEqual("03:36:39;17", d.__str__())
-        self.assertEqual(389598, d.frames)
+        self.assertEqual(389598, d._frames)
         self.assertEqual("03:36:39;17", f.__str__())
-        self.assertEqual(389598, f.frames)
+        self.assertEqual(389598, f._frames)
 
         tc = Timecode('29.97', '03:36:09;23')
         tc2 = Timecode('29.97', '00:00:29;23')
         d = tc + tc2
         f = tc + 894
         self.assertEqual("03:36:39;17", d.__str__())
-        self.assertEqual(389598, d.frames)
+        self.assertEqual(389598, d._frames)
         self.assertEqual("03:36:39;17", f.__str__())
-        self.assertEqual(389598, f.frames)
+        self.assertEqual(389598, f._frames)
 
         tc = Timecode('30', '03:36:09:23')
         tc2 = Timecode('30', '00:00:29:23')
         d = tc + tc2
         f = tc + 894
         self.assertEqual("03:36:39:17", d.__str__())
-        self.assertEqual(389988, d.frames)
+        self.assertEqual(389988, d._frames)
         self.assertEqual("03:36:39:17", f.__str__())
-        self.assertEqual(389988, f.frames)
+        self.assertEqual(389988, f._frames)
 
         tc = Timecode('25', '03:36:09:23')
         tc2 = Timecode('25', '00:00:29:23')
-        self.assertEqual(749, tc2.frames)
+        self.assertEqual(749, tc2._frames)
         d = tc + tc2
         f = tc + 749
         self.assertEqual("03:36:39:22", d.__str__())
-        self.assertEqual(324998, d.frames)
+        self.assertEqual(324998, d._frames)
         self.assertEqual("03:36:39:22", f.__str__())
-        self.assertEqual(324998, f.frames)
+        self.assertEqual(324998, f._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         tc2 = Timecode('59.94', '00:00:29;23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc + tc2
         f = tc + 1764
         self.assertEqual("03:36:38;47", d.__str__())
-        self.assertEqual(779148, d.frames)
+        self.assertEqual(779148, d._frames)
         self.assertEqual("03:36:38;47", f.__str__())
-        self.assertEqual(779148, f.frames)
+        self.assertEqual(779148, f._frames)
 
         tc = Timecode('60', '03:36:09:23')
         tc2 = Timecode('60', '00:00:29:23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc + tc2
         f = tc + 1764
         self.assertEqual("03:36:38:47", d.__str__())
-        self.assertEqual(779928, d.frames)
+        self.assertEqual(779928, d._frames)
         self.assertEqual("03:36:38:47", f.__str__())
-        self.assertEqual(779928, f.frames)
+        self.assertEqual(779928, f._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         tc2 = Timecode('59.94', '00:00:29;23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc + tc2
         f = tc + 1764
         self.assertEqual("03:36:38;47", d.__str__())
-        self.assertEqual(779148, d.frames)
+        self.assertEqual(779148, d._frames)
         self.assertEqual("03:36:38;47", f.__str__())
-        self.assertEqual(779148, f.frames)
+        self.assertEqual(779148, f._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         tc2 = Timecode('23.98', '00:00:29:23')
-        self.assertEqual(720, tc2.frames)
+        self.assertEqual(720, tc2._frames)
         d = tc + tc2
         f = tc + 720
         self.assertEqual("03:36:39:23", d.__str__())
-        self.assertEqual(312000, d.frames)
+        self.assertEqual(312000, d._frames)
         self.assertEqual("03:36:39:23", f.__str__())
-        self.assertEqual(312000, f.frames)
+        self.assertEqual(312000, f._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         tc2 = Timecode('23.98', '00:00:29:23')
-        self.assertEqual(720, tc2.frames)
+        self.assertEqual(720, tc2._frames)
         d = tc + tc2
         f = tc + 720
         self.assertEqual("03:36:39:23", d.__str__())
-        self.assertEqual(312000, d.frames)
+        self.assertEqual(312000, d._frames)
         self.assertEqual("03:36:39:23", f.__str__())
-        self.assertEqual(312000, f.frames)
+        self.assertEqual(312000, f._frames)
 
         tc = Timecode('ms', '03:36:09.230')
         tc2 = Timecode('ms', '01:06:09.230')
-        self.assertEqual(3969231, tc2.frames)
+        self.assertEqual(3969231, tc2._frames)
         d = tc + tc2
         f = tc + 720
         self.assertEqual("04:42:18.461", d.__str__())
-        self.assertEqual(16938462, d.frames)
+        self.assertEqual(16938462, d._frames)
         self.assertEqual("03:36:09.950", f.__str__())
-        self.assertEqual(12969951, f.frames)
+        self.assertEqual(12969951, f._frames)
 
         tc = Timecode('24', frames=12000)
         tc2 = Timecode('24', frames=485)
-        self.assertEqual(485, tc2.frames)
+        self.assertEqual(485, tc2._frames)
         d = tc + tc2
         f = tc + 719
         self.assertEqual("00:08:40:04", d.__str__())
-        self.assertEqual(12485, d.frames)
+        self.assertEqual(12485, d._frames)
         self.assertEqual("00:08:49:22", f.__str__())
-        self.assertEqual(12719, f.frames)
+        self.assertEqual(12719, f._frames)
 
     def test_add_with_two_different_frame_rates(self):
         """testing if the resultant object will have the left sides frame rate
@@ -594,7 +594,7 @@ class TimecodeTester(unittest.TestCase):
         tc2 = Timecode('24', '00:00:00:10')
         tc3 = tc1 + tc2
         self.assertEqual('29.97', tc3.framerate)
-        self.assertEqual(12, tc3.frames)
+        self.assertEqual(12, tc3._frames)
         assert tc3 == '00:00:00;11'
 
     def test_frame_number_attribute_value_is_correctly_calculated(self):
@@ -602,139 +602,139 @@ class TimecodeTester(unittest.TestCase):
         calculated
         """
         tc1 = Timecode('24', '00:00:00:00')
-        self.assertEqual(1, tc1.frames)
+        self.assertEqual(1, tc1._frames)
         self.assertEqual(0, tc1.frame_number)
 
         tc2 = Timecode('24', '00:00:01:00')
-        self.assertEqual(25, tc2.frames)
+        self.assertEqual(25, tc2._frames)
         self.assertEqual(24, tc2.frame_number)
 
         tc3 = Timecode('29.97', '00:01:00;00')
-        self.assertEqual(1799, tc3.frames)
+        self.assertEqual(1799, tc3._frames)
         self.assertEqual(1798, tc3.frame_number)
 
         tc4 = Timecode('30', '00:01:00:00')
-        self.assertEqual(1801, tc4.frames)
+        self.assertEqual(1801, tc4._frames)
         self.assertEqual(1800, tc4.frame_number)
 
         tc5 = Timecode('50', '00:01:00:00')
-        self.assertEqual(3001, tc5.frames)
+        self.assertEqual(3001, tc5._frames)
         self.assertEqual(3000, tc5.frame_number)
 
         tc6 = Timecode('59.94', '00:01:00;00')
-        self.assertEqual(3597, tc6.frames)
+        self.assertEqual(3597, tc6._frames)
         self.assertEqual(3596, tc6.frame_number)
 
         tc7 = Timecode('60', '00:01:00:00')
-        self.assertEqual(3601, tc7.frames)
+        self.assertEqual(3601, tc7._frames)
         self.assertEqual(3600, tc7.frame_number)
 
     def test_op_overloads_subtract(self):
         tc = Timecode('29.97', '03:36:09;23')
         tc2 = Timecode('29.97', '00:00:29;23')
-        self.assertEqual(894, tc2.frames)
+        self.assertEqual(894, tc2._frames)
         d = tc - tc2
         f = tc - 894
         self.assertEqual("03:35:39;27", d.__str__())
-        self.assertEqual(387810, d.frames)
+        self.assertEqual(387810, d._frames)
         self.assertEqual("03:35:39;27", f.__str__())
-        self.assertEqual(387810, f.frames)
+        self.assertEqual(387810, f._frames)
 
         tc = Timecode('29.97', '03:36:09;23')
         tc2 = Timecode('29.97', '00:00:29;23')
         d = tc - tc2
         f = tc - 894
         self.assertEqual("03:35:39;27", d.__str__())
-        self.assertEqual(387810, d.frames)
+        self.assertEqual(387810, d._frames)
         self.assertEqual("03:35:39;27", f.__str__())
-        self.assertEqual(387810, f.frames)
+        self.assertEqual(387810, f._frames)
 
         tc = Timecode('30', '03:36:09:23')
         tc2 = Timecode('30', '00:00:29:23')
         d = tc - tc2
         f = tc - 894
         self.assertEqual("03:35:39:29", d.__str__())
-        self.assertEqual(388200, d.frames)
+        self.assertEqual(388200, d._frames)
         self.assertEqual("03:35:39:29", f.__str__())
-        self.assertEqual(388200, f.frames)
+        self.assertEqual(388200, f._frames)
 
         tc = Timecode('25', '03:36:09:23')
         tc2 = Timecode('25', '00:00:29:23')
-        self.assertEqual(749, tc2.frames)
+        self.assertEqual(749, tc2._frames)
         d = tc - tc2
         f = tc - 749
         self.assertEqual("03:35:39:24", d.__str__())
-        self.assertEqual(323500, d.frames)
+        self.assertEqual(323500, d._frames)
         self.assertEqual("03:35:39:24", f.__str__())
-        self.assertEqual(323500, f.frames)
+        self.assertEqual(323500, f._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         tc2 = Timecode('59.94', '00:00:29;23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc - tc2
         f = tc - 1764
         self.assertEqual("03:35:39;55", d.__str__())
-        self.assertEqual(775620, d.frames)
+        self.assertEqual(775620, d._frames)
         self.assertEqual("03:35:39;55", f.__str__())
-        self.assertEqual(775620, f.frames)
+        self.assertEqual(775620, f._frames)
 
         tc = Timecode('60', '03:36:09:23')
         tc2 = Timecode('60', '00:00:29:23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc - tc2
         f = tc - 1764
         self.assertEqual("03:35:39:59", d.__str__())
-        self.assertEqual(776400, d.frames)
+        self.assertEqual(776400, d._frames)
         self.assertEqual("03:35:39:59", f.__str__())
-        self.assertEqual(776400, f.frames)
+        self.assertEqual(776400, f._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         tc2 = Timecode('59.94', '00:00:29;23')
         d = tc - tc2
         f = tc - 1764
         self.assertEqual("03:35:39;55", d.__str__())
-        self.assertEqual(775620, d.frames)
+        self.assertEqual(775620, d._frames)
         self.assertEqual("03:35:39;55", f.__str__())
-        self.assertEqual(775620, f.frames)
+        self.assertEqual(775620, f._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         tc2 = Timecode('23.98', '00:00:29:23')
-        self.assertEqual(720, tc2.frames)
+        self.assertEqual(720, tc2._frames)
         d = tc - tc2
         f = tc - 720
         self.assertEqual("03:35:39:23", d.__str__())
-        self.assertEqual(310560, d.frames)
+        self.assertEqual(310560, d._frames)
         self.assertEqual("03:35:39:23", f.__str__())
-        self.assertEqual(310560, f.frames)
+        self.assertEqual(310560, f._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         tc2 = Timecode('23.98', '00:00:29:23')
         d = tc - tc2
         f = tc - 720
         self.assertEqual("03:35:39:23", d.__str__())
-        self.assertEqual(310560, d.frames)
+        self.assertEqual(310560, d._frames)
         self.assertEqual("03:35:39:23", f.__str__())
-        self.assertEqual(310560, f.frames)
+        self.assertEqual(310560, f._frames)
 
         tc = Timecode('ms', '03:36:09.230')
         tc2 = Timecode('ms', '01:06:09.230')
-        self.assertEqual(3969231, tc2.frames)
+        self.assertEqual(3969231, tc2._frames)
         d = tc - tc2
         f = tc - 3969231
         self.assertEqual("02:29:59.999", d.__str__())
-        self.assertEqual(9000000, d.frames)
+        self.assertEqual(9000000, d._frames)
         self.assertEqual("02:29:59.999", f.__str__())
-        self.assertEqual(9000000, f.frames)
+        self.assertEqual(9000000, f._frames)
 
         tc = Timecode('24', frames=12000)
         tc2 = Timecode('24', frames=485)
-        self.assertEqual(485, tc2.frames)
+        self.assertEqual(485, tc2._frames)
         d = tc - tc2
         f = tc - 485
         self.assertEqual("00:07:59:18", d.__str__())
-        self.assertEqual(11515, d.frames)
+        self.assertEqual(11515, d._frames)
         self.assertEqual("00:07:59:18", f.__str__())
-        self.assertEqual(11515, f.frames)
+        self.assertEqual(11515, f._frames)
 
     def test_op_overloads_mult(self):
         tc = Timecode('29.97', '00:00:09;23')
@@ -742,97 +742,97 @@ class TimecodeTester(unittest.TestCase):
         d = tc * tc2
         f = tc * 4
         self.assertEqual("02:26:09;29", d.__str__())
-        self.assertEqual(262836, d.frames)
+        self.assertEqual(262836, d._frames)
         self.assertEqual("00:00:39;05", f.__str__())
-        self.assertEqual(1176, f.frames)
+        self.assertEqual(1176, f._frames)
 
         tc = Timecode('29.97', '00:00:09;23')
         tc2 = Timecode('29.97', '00:00:29;23')
         d = tc * tc2
         f = tc * 4
         self.assertEqual("02:26:09;29", d.__str__())
-        self.assertEqual(262836, d.frames)
+        self.assertEqual(262836, d._frames)
         self.assertEqual("00:00:39;05", f.__str__())
-        self.assertEqual(1176, f.frames)
+        self.assertEqual(1176, f._frames)
 
         tc = Timecode('30', '03:36:09:23')
         tc2 = Timecode('30', '00:00:29:23')
         d = tc * tc2
         f = tc * 894
         self.assertEqual("04:50:01:05", d.__str__())
-        self.assertEqual(347850036, d.frames)
+        self.assertEqual(347850036, d._frames)
         self.assertEqual("04:50:01:05", f.__str__())
-        self.assertEqual(347850036, f.frames)
+        self.assertEqual(347850036, f._frames)
 
         tc = Timecode('25', '03:36:09:23')
         tc2 = Timecode('25', '00:00:29:23')
-        self.assertEqual(749, tc2.frames)
+        self.assertEqual(749, tc2._frames)
         d = tc * tc2
         f = tc * 749
         self.assertEqual("10:28:20:00", d.__str__())
-        self.assertEqual(242862501, d.frames)
+        self.assertEqual(242862501, d._frames)
         self.assertEqual("10:28:20:00", f.__str__())
-        self.assertEqual(242862501, f.frames)
+        self.assertEqual(242862501, f._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         tc2 = Timecode('59.94', '00:00:29;23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc * tc2
         f = tc * 1764
         self.assertEqual("18:59:27;35", d.__str__())
-        self.assertEqual(1371305376, d.frames)
+        self.assertEqual(1371305376, d._frames)
         self.assertEqual("18:59:27;35", f.__str__())
-        self.assertEqual(1371305376, f.frames)
+        self.assertEqual(1371305376, f._frames)
 
         tc = Timecode('60', '03:36:09:23')
         tc2 = Timecode('60', '00:00:29:23')
-        self.assertEqual(1764, tc2.frames)
+        self.assertEqual(1764, tc2._frames)
         d = tc * tc2
         f = tc * 1764
         self.assertEqual("19:00:21:35", d.__str__())
-        self.assertEqual(1372681296, d.frames)
+        self.assertEqual(1372681296, d._frames)
         self.assertEqual("19:00:21:35", f.__str__())
-        self.assertEqual(1372681296, f.frames)
+        self.assertEqual(1372681296, f._frames)
 
         tc = Timecode('59.94', '03:36:09;23')
         tc2 = Timecode('59.94', '00:00:29;23')
         d = tc * tc2
         f = tc * 1764
         self.assertEqual("18:59:27;35", d.__str__())
-        self.assertEqual(1371305376, d.frames)
+        self.assertEqual(1371305376, d._frames)
         self.assertEqual("18:59:27;35", f.__str__())
-        self.assertEqual(1371305376, f.frames)
+        self.assertEqual(1371305376, f._frames)
 
         tc = Timecode('23.98', '03:36:09:23')
         tc2 = Timecode('23.98', '00:00:29:23')
-        self.assertEqual(tc.frames, 311280)
-        self.assertEqual(tc2.frames, 720)
+        self.assertEqual(tc._frames, 311280)
+        self.assertEqual(tc2._frames, 720)
         d = tc * tc2
         f = tc * 720
-        self.assertEqual(224121600, d.frames)
+        self.assertEqual(224121600, d._frames)
         self.assertEqual("01:59:59:23", d.__str__())
-        self.assertEqual(224121600, f.frames)
+        self.assertEqual(224121600, f._frames)
         self.assertEqual("01:59:59:23", f.__str__())
 
         tc = Timecode('ms', '03:36:09.230')
         tc2 = Timecode('ms', '01:06:09.230')
-        self.assertEqual(3969231, tc2.frames)
+        self.assertEqual(3969231, tc2._frames)
         d = tc * tc2
         f = tc * 3969231
         self.assertEqual("17:22:11.360", d.__str__())
-        self.assertEqual(51477873731361, d.frames)
+        self.assertEqual(51477873731361, d._frames)
         self.assertEqual("17:22:11.360", f.__str__())
-        self.assertEqual(51477873731361, f.frames)
+        self.assertEqual(51477873731361, f._frames)
 
         tc = Timecode('24', frames=12000)
         tc2 = Timecode('24', frames=485)
-        self.assertEqual(485, tc2.frames)
+        self.assertEqual(485, tc2._frames)
         d = tc * tc2
         f = tc * 485
         self.assertEqual("19:21:39:23", d.__str__())
-        self.assertEqual(5820000, d.frames)
+        self.assertEqual(5820000, d._frames)
         self.assertEqual("19:21:39:23", f.__str__())
-        self.assertEqual(5820000, f.frames)
+        self.assertEqual(5820000, f._frames)
 
     def test_24_hour_limit_in_24fps(self):
         """testing if the timecode will loop back to 00:00:00:00 after 24 hours
@@ -855,11 +855,11 @@ class TimecodeTester(unittest.TestCase):
         """
         tc = Timecode('29.97', '00:00:00;21')
         self.assertTrue(tc.drop_frame)
-        self.assertEqual(22, tc.frames)
+        self.assertEqual(22, tc._frames)
 
         tc2 = Timecode('29.97', '23:59:59;29')
         self.assertTrue(tc2.drop_frame)
-        self.assertEqual(2589408, tc2.frames)
+        self.assertEqual(2589408, tc2._frames)
 
         self.assertEqual(
             '00:00:00;21',
@@ -895,9 +895,9 @@ class TimecodeTester(unittest.TestCase):
         in 29.97 fps
         """
         tc0 = Timecode('59.94', '23:59:59;29')
-        self.assertEqual(5178786, tc0.frames)
+        self.assertEqual(5178786, tc0._frames)
         tc0 = Timecode('29.97', '23:59:59;29')
-        self.assertEqual(2589408, tc0.frames)
+        self.assertEqual(2589408, tc0._frames)
 
         tc1 = Timecode('29.97', frames=2589408)
         self.assertEqual('23:59:59;29', tc1.__str__())
@@ -917,16 +917,16 @@ class TimecodeTester(unittest.TestCase):
 
         tc = Timecode('29.97', '04:20:13;21')
         tca = Timecode('29.97', frames=467944)
-        self.assertEqual(467944, tca.frames)
-        self.assertEqual(467944, tc.frames)
+        self.assertEqual(467944, tca._frames)
+        self.assertEqual(467944, tc._frames)
         self.assertEqual('04:20:13;21', tca.__str__())
         self.assertEqual('04:20:13;21', tc.__str__())
 
         tc2 = Timecode('29.97', '23:59:59;29')
-        self.assertEqual(2589408, tc2.frames)
+        self.assertEqual(2589408, tc2._frames)
         self.assertEqual('23:59:59;29', tc2.__str__())
         tc2a = Timecode('29.97', frames=2589408)
-        self.assertEqual(2589408, tc2a.frames)
+        self.assertEqual(2589408, tc2a._frames)
         self.assertEqual('23:59:59;29', tc2a.__str__())
 
         tc3 = (tc + tc2)
@@ -948,11 +948,11 @@ class TimecodeTester(unittest.TestCase):
         """
         tc1 = Timecode('25', frames=100)
         self.assertEqual('00:00:03:24', tc1.__str__())
-        self.assertEqual(100, tc1.frames)
+        self.assertEqual(100, tc1._frames)
 
         tc1.framerate = '12'
         self.assertEqual('00:00:08:03', tc1.__str__())
-        self.assertEqual(100, tc1.frames)
+        self.assertEqual(100, tc1._frames)
 
     def test_rational_framerate_conversions(self):
         tc = Timecode('24000/1000', '00:00:00:00')
@@ -1074,111 +1074,27 @@ class TimecodeTester(unittest.TestCase):
         result = Timecode.parse_timecode(16663)
         self.assertTrue(result == (0, 0, 41, 17))  # issue #16
 
-    # def test_exceptions(self):
-    #     """test exceptions
-    #     """
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('23.98', '01:20:30:303')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:303',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('24', '01:20:30:303')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:303',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('29.97', '01:20:30:303')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:303',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('30', '01:20:30:303')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:303',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('59.94', '01:20:30:303')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:303',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('60', '01:20:30:303')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:303',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('ms', '01:20:30:3039')
-    #
-    #     self.assertEqual(
-    #         'Timecode string parsing error. 01:20:30:3039',
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         Timecode('60', '01:20:30:30')
-    #
-    #     self.assertEqual(
-    #         'Drop frame with 60fps not supported, only 29.97 & 59.94.',
-    #         cm.exception.__str__(),
-    #     )
-    #
-    #     tc = Timecode('29.97', '00:00:09:23')
-    #     tc2 = 'bum'
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         d = tc * tc2
-    #     self.assertEqual(
-    #         "Type str not supported for arithmetic.",
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     tc = Timecode('30', '00:00:09:23')
-    #     tc2 = 'bum'
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         d = tc + tc2
-    #
-    #     self.assertEqual(
-    #         "Type str not supported for arithmetic.",
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     tc = Timecode('24', '00:00:09:23')
-    #     tc2 = 'bum'
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         d = tc - tc2
-    #
-    #     self.assertEqual(
-    #         "Type str not supported for arithmetic.",
-    #         cm.exception.__str__()
-    #     )
-    #
-    #     tc = Timecode('ms', '00:00:09:237')
-    #     tc2 = 'bum'
-    #     with self.assertRaises(TimecodeError) as cm:
-    #         d = tc / tc2
-    #
-    #     self.assertEqual(
-    #         "Type str not supported for arithmetic.",
-    #         cm.exception.__str__()
-    #     )
+    def test_frames_argument_is_not_an_int(self):
+        """testing if a TypeError will be raised when the frames argument is
+        not an integer
+        """
+        with self.assertRaises(TypeError) as cm:
+            Timecode('30', frames=0.1223)
 
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(
+            "Timecode.frames should be a positive integer bigger than zero, not a float",
+            str(cm.exception)
+        )
+
+    def test_frames_argument_is_zero(self):
+        """testing if a ValueError will be raised when the frames argument is
+        given as 0
+        """
+        with self.assertRaises(ValueError) as cm:
+            Timecode('30', frames=0)
+
+        self.assertEqual(
+            "Timecode.frames should be a positive integer bigger than zero, not 0",
+            str(cm.exception)
+        )
+
