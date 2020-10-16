@@ -2,6 +2,12 @@
 Changes
 =======
 
+1.2.4
+=====
+
+* **Update:** It is now possible to supply a ``Fraction`` instances for the
+  ``framerate`` argument.
+
 1.2.3
 =====
 * **Update:** Passing ``frames=0`` will now raise a ValueError. This hopefully

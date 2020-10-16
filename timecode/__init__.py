@@ -23,7 +23,7 @@
 import math
 from decimal import Decimal, ROUND_HALF_UP
 
-__version__ = '1.2.3'
+__version__ = '1.2.4'
 
 
 def school_math_round(num):
@@ -151,9 +151,16 @@ class Timecode(object):
         if isinstance(framerate, tuple):
             numerator, denominator = framerate
 
+        try:
+            from fractions import Fraction
+            if isinstance(framerate, Fraction):
+                numerator = framerate.numerator
+                denominator = framerate.denominator
+        except ImportError:
+            pass
+
         if numerator and denominator:
             framerate = round(float(numerator) / float(denominator), 2)
-
             if framerate.is_integer():
                 framerate = int(framerate)
 
@@ -174,7 +181,7 @@ class Timecode(object):
                 self.drop_frame = False
             else:
                 self.drop_frame = True
-        elif framerate in ['23.976', '23.98']:
+        elif any(map(lambda x: framerate.startswith(x), ['23.976', '23.98'])):
             framerate = '24'
             self._int_framerate = 24
         elif framerate in ['ms', '1000']:

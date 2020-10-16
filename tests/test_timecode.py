@@ -1098,3 +1098,22 @@ class TimecodeTester(unittest.TestCase):
             str(cm.exception)
         )
 
+    def test_bug_report_30(self):
+        """testing bug report 30
+
+        The claim on the bug report was to get ``00:34:45:09`` from a Timecode
+        with 23.976 as the frame rate (supplied with Python 3's Fraction
+        library) and 50000 as the total number of frames. The support for
+        Fraction instances was missing and it has been added. But the claim for
+        the resultant Timecode was wrong, the resultant Timecode should have
+        been ``00:34:43:07`` and that has been approved by DaVinci Resolve.
+        """
+        from fractions import Fraction
+        framerate = Fraction(24000, 1001)  # 23.976023976023978
+        frame_idx = 50000
+
+        tc1 = Timecode(framerate, frames=frame_idx)
+        self.assertEqual(
+            '00:34:43:07',
+            tc1.__repr__()
+        )
