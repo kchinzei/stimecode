@@ -1120,6 +1120,7 @@ class TimecodeTester(unittest.TestCase):
 
     def test_bug_report_31_part1(self):
         """testing bug report 31
+        https://github.com/eoyilmaz/timecode/issues/31
         """
         timecode1 = '01:00:10:00'
         timecode2 = '01:00:10:00'
@@ -1138,6 +1139,7 @@ class TimecodeTester(unittest.TestCase):
 
     def test_bug_report_31_part2(self):
         """testing bug report 31
+        https://github.com/eoyilmaz/timecode/issues/31
         """
         timecode1 = '01:00:08:00'
         timecode2 = '01:00:10:00'
@@ -1146,3 +1148,12 @@ class TimecodeTester(unittest.TestCase):
         b = Timecode('25', timecode2)
         offset = a - b
         c = Timecode('25', timecode3) + offset
+
+    def test_bug_report_32(self):
+        """testing bug report 32
+        https://github.com/eoyilmaz/timecode/issues/32
+        """
+        framerate = "30000/1001"
+        seconds = 500
+        tc1 = Timecode(framerate, start_seconds=seconds)
+        self.assertEqual(seconds, tc1.float)

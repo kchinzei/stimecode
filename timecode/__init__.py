@@ -556,7 +556,7 @@ class Timecode(object):
     def float(self):
         """returns the seconds as float
         """
-        return float(self._frames) / float(self.framerate)
+        return float(self._frames) / float(self._int_framerate)
 
 
 class TimecodeError(Exception):

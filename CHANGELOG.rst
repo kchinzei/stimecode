@@ -10,6 +10,8 @@ Changes
   possible to have a Timecode with negative or zero frames as this is changed
   in 1.2.3.
 
+* **Fix:** Fixed ``Timecode.float`` property for drop frames.
+
 1.2.4
 =====
 
