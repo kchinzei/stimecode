@@ -23,7 +23,7 @@
 import math
 from decimal import Decimal, ROUND_HALF_UP
 
-__version__ = '1.2.4'
+__version__ = '1.2.5'
 
 
 def school_math_round(num):
@@ -493,7 +493,7 @@ class Timecode(object):
                 other.__class__.__name__
             )
 
-        return Timecode(self._framerate, frames=subtracted_frames)
+        return Timecode(self._framerate, frames=abs(subtracted_frames))
 
     def __mul__(self, other):
         """returns new Timecode instance with multiplied value"""

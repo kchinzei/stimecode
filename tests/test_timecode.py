@@ -1117,3 +1117,32 @@ class TimecodeTester(unittest.TestCase):
             '00:34:43:07',
             tc1.__repr__()
         )
+
+    def test_bug_report_31_part1(self):
+        """testing bug report 31
+        """
+        timecode1 = '01:00:10:00'
+        timecode2 = '01:00:10:00'
+        timecode3 = '01:01:00:00'
+        a = Timecode('25', timecode1)
+        b = Timecode('25', timecode2)
+
+        with self.assertRaises(ValueError) as cm:
+            offset = a - b
+            c = Timecode('25', timecode3) + offset
+
+        self.assertEqual(
+            str(cm.exception),
+            "Timecode.frames should be a positive integer bigger than zero, not 0"
+        )
+
+    def test_bug_report_31_part2(self):
+        """testing bug report 31
+        """
+        timecode1 = '01:00:08:00'
+        timecode2 = '01:00:10:00'
+        timecode3 = '01:01:00:00'
+        a = Timecode('25', timecode1)
+        b = Timecode('25', timecode2)
+        offset = a - b
+        c = Timecode('25', timecode3) + offset

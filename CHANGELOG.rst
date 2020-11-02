@@ -2,6 +2,14 @@
 Changes
 =======
 
+1.2.5
+=====
+
+* **Fix:** Fixed an edge case when two Timecodes are subtracted the resultant
+  Timecode will always have the correct amount of frames. But it is not
+  possible to have a Timecode with negative or zero frames as this is changed
+  in 1.2.3.
+
 1.2.4
 =====
 
