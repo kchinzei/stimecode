@@ -20,18 +20,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import math
-from decimal import Decimal, ROUND_HALF_UP
 
-__version__ = '1.2.5'
-
-
-def school_math_round(num):
-    """
-    Try built in round(2.5) and then use this method instead... Why? Not sure,
-    but this is right, for the moment at least.
-    """
-    return int(Decimal(num).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+__version__ = '1.3.0'
 
 
 class Timecode(object):
@@ -84,17 +74,17 @@ class Timecode(object):
         # attribute override order
         # start_timecode > frames > start_seconds
         if start_timecode:
-            self._frames = self.tc_to_frames(start_timecode)
+            self.frames = self.tc_to_frames(start_timecode)
         else:
-            if frames is not None:  # because 0==False, and frames can be 0
+            if frames is not None:
                 self.frames = frames
             elif start_seconds is not None:
                 if start_seconds == 0:
                     raise ValueError("``start_seconds`` argument can not be 0")
-                self._frames = self.float_to_tc(start_seconds)
+                self.frames = self.float_to_tc(start_seconds)
             else:
                 # use default value of 00:00:00:00
-                self._frames = self.tc_to_frames('00:00:00:00')
+                self.frames = self.tc_to_frames('00:00:00:00')
 
     @property
     def frames(self):
@@ -182,7 +172,6 @@ class Timecode(object):
             else:
                 self.drop_frame = True
         elif any(map(lambda x: framerate.startswith(x), ['23.976', '23.98'])):
-            framerate = '24'
             self._int_framerate = 24
         elif framerate in ['ms', '1000']:
             self._int_framerate = 1000
@@ -204,7 +193,7 @@ class Timecode(object):
     def set_timecode(self, timecode):
         """Sets the frames by using the given timecode
         """
-        self._frames = self.tc_to_frames(timecode)
+        self.frames = self.tc_to_frames(timecode)
 
     def float_to_tc(self, seconds):
         """set the frames by using the given seconds
@@ -214,6 +203,10 @@ class Timecode(object):
     def tc_to_frames(self, timecode):
         """Converts the given timecode to frames
         """
+        # timecode could be a Timecode instance
+        if isinstance(timecode, Timecode):
+            return timecode.frames
+
         hours, minutes, seconds, frames = map(int, self.parse_timecode(timecode))
 
         if isinstance(timecode, int):
@@ -223,7 +216,10 @@ class Timecode(object):
             if self.drop_frame:
                 timecode = ';'.join(timecode.rsplit(':', 1))
 
-        ffps = float(self._framerate)
+        if self.framerate != 'frames':
+            ffps = float(self.framerate)
+        else:
+            ffps = float(self._int_framerate)
 
         if self.drop_frame:
             # Number of drop frames is 6% of framerate rounded to nearest
@@ -257,27 +253,14 @@ class Timecode(object):
              (ifps * seconds) + frames) - \
             (drop_frames * (total_minutes - (total_minutes // 10)))
 
-        # Special case correction for 29.97 NDF (Non-Dropframe)
-        if self._framerate in {'29.97', '59.94'} and self.drop_frame is False:
-            # Correct for using 30 fps calculation, by converting it to 29.97
-            #   or from 60 fps calculation, by converting it to 59.94
-            # FIXME: Not sure what to do when new frame number is fractional.
-            #  Currently we're just flooring the result, but not sure what we
-            #  should do yet. TBD.
-            corrected_frame_number = frame_number * (ffps / float(ifps))
-            frames = math.ceil(corrected_frame_number) + 1
-
-        else:
-            frames = frame_number + 1
-
-        return frames
+        return frame_number + 1  # frames
 
     def frames_to_tc(self, frames):
         """Converts frames back to timecode
 
         :returns str: the string representation of the current time code
         """
-        ffps = float(self._framerate)
+        ffps = float(self.framerate)
 
         if self.drop_frame:
             # Number of frames to drop on the minute marks is the nearest
@@ -297,10 +280,6 @@ class Timecode(object):
         frames_per_minute = int(round(ffps) * 60) - drop_frames
 
         frame_number = frames - 1
-
-        if frame_number < 0:
-            # Negative time. Add 24 hours.
-            frame_number += frames_per_24_hours
 
         # If frame_number is greater than 24 hrs, next operation will rollover
         # clock
@@ -329,20 +308,17 @@ class Timecode(object):
 
     def tc_to_string(self, hrs, mins, secs, frs):
         if self.fraction_frame:
-            return "{hh:02d}:{mm:02d}:{ss:06.3f}".format(hh=hrs,
-                                                         mm=mins,
-                                                         ss=secs + frs
-                                                         )
+            return "{hh:02d}:{mm:02d}:{ss:06.3f}".format(
+                hh=hrs, mm=mins, ss=secs + frs
+            )
 
         ff = "%02d"
         if self.ms_frame:
             ff = "%03d"
 
-        return ("%02d:%02d:%02d%s" + ff) % (hrs,
-                                            mins,
-                                            secs,
-                                            self.frame_delimiter,
-                                            frs)
+        return ("%02d:%02d:%02d%s" + ff) % (
+            hrs, mins, secs, self.frame_delimiter, frs
+        )
 
     @classmethod
     def parse_timecode(cls, timecode):
@@ -377,7 +353,7 @@ class Timecode(object):
             return ':'
 
     def __iter__(self):
-        return self
+        yield self
 
     def next(self):
         self.add_frames(1)
@@ -390,7 +366,7 @@ class Timecode(object):
     def add_frames(self, frames):
         """adds or subtracts frames number of frames
         """
-        self._frames += frames
+        self.frames += frames
 
     def sub_frames(self, frames):
         """adds or subtracts frames number of frames
@@ -400,77 +376,72 @@ class Timecode(object):
     def mult_frames(self, frames):
         """multiply frames
         """
-        self._frames *= frames
+        self.frames *= frames
 
     def div_frames(self, frames):
         """adds or subtracts frames number of frames"""
-        self._frames = self._frames / frames
+        self.frames = int(self.frames / frames)
 
     def __eq__(self, other):
         """the overridden equality operator
         """
         if isinstance(other, Timecode):
-            return self._framerate == other._framerate and \
-                   self._frames == other._frames
+            return self.framerate == other.framerate and self.frames == other.frames
         elif isinstance(other, str):
-            new_tc = Timecode(self._framerate, other)
+            new_tc = Timecode(self.framerate, other)
             return self.__eq__(new_tc)
         elif isinstance(other, int):
-            return self._frames == other
+            return self.frames == other
 
     def __ge__(self, other):
         """override greater or equal to operator"""
         if isinstance(other, Timecode):
-            return self._framerate == other._framerate and \
-                   self._frames >= other._frames
+            return self.framerate == other.framerate and self.frames >= other.frames
         elif isinstance(other, str):
-            new_tc = Timecode(self._framerate, other)
-            return self._frames >= new_tc._frames
+            new_tc = Timecode(self.framerate, other)
+            return self.frames >= new_tc.frames
         elif isinstance(other, int):
-            return self._frames >= other
+            return self.frames >= other
 
     def __gt__(self, other):
         """override greater operator"""
         if isinstance(other, Timecode):
-            return self._framerate == other._framerate and \
-                   self._frames > other._frames
+            return self.framerate == other.framerate and self.frames > other.frames
         elif isinstance(other, str):
-            new_tc = Timecode(self._framerate, other)
-            return self._frames > new_tc._frames
+            new_tc = Timecode(self.framerate, other)
+            return self.frames > new_tc.frames
         elif isinstance(other, int):
-            return self._frames > other
+            return self.frames > other
 
     def __le__(self, other):
         """override less or equal to operator"""
         if isinstance(other, Timecode):
-            return self._framerate == other._framerate and \
-                   self._frames <= other._frames
+            return self.framerate == other.framerate and self.frames <= other.frames
         elif isinstance(other, str):
-            new_tc = Timecode(self._framerate, other)
-            return self._frames <= new_tc._frames
+            new_tc = Timecode(self.framerate, other)
+            return self.frames <= new_tc.frames
         elif isinstance(other, int):
-            return self._frames <= other
+            return self.frames <= other
 
     def __lt__(self, other):
         """override less operator"""
         if isinstance(other, Timecode):
-            return self._framerate == other._framerate and \
-                   self._frames < other._frames
+            return self.framerate == other.framerate and self.frames < other.frames
         elif isinstance(other, str):
-            new_tc = Timecode(self._framerate, other)
-            return self._frames < new_tc._frames
+            new_tc = Timecode(self.framerate, other)
+            return self.frames < new_tc.frames
         elif isinstance(other, int):
-            return self._frames < other
+            return self.frames < other
 
     def __add__(self, other):
         """returns new Timecode instance with the given timecode or frames
         added to this one
         """
         # duplicate current one
-        tc = Timecode(self._framerate, frames=self._frames)
+        tc = Timecode(self.framerate, frames=self.frames)
 
         if isinstance(other, Timecode):
-            tc.add_frames(other._frames)
+            tc.add_frames(other.frames)
         elif isinstance(other, int):
             tc.add_frames(other)
         else:
@@ -484,79 +455,83 @@ class Timecode(object):
     def __sub__(self, other):
         """returns new Timecode instance with subtracted value"""
         if isinstance(other, Timecode):
-            subtracted_frames = self._frames - other._frames
+            subtracted_frames = self.frames - other.frames
         elif isinstance(other, int):
-            subtracted_frames = self._frames - other
+            subtracted_frames = self.frames - other
         else:
             raise TimecodeError(
                 'Type %s not supported for arithmetic.' %
                 other.__class__.__name__
             )
 
-        return Timecode(self._framerate, frames=abs(subtracted_frames))
+        return Timecode(self.framerate, frames=abs(subtracted_frames))
 
     def __mul__(self, other):
         """returns new Timecode instance with multiplied value"""
         if isinstance(other, Timecode):
-            multiplied_frames = self._frames * other._frames
+            multiplied_frames = self.frames * other.frames
         elif isinstance(other, int):
-            multiplied_frames = self._frames * other
+            multiplied_frames = self.frames * other
         else:
             raise TimecodeError(
                 'Type %s not supported for arithmetic.' %
                 other.__class__.__name__
             )
 
-        return Timecode(self._framerate, frames=multiplied_frames)
+        return Timecode(self.framerate, frames=multiplied_frames)
 
     def __div__(self, other):
         """returns new Timecode instance with divided value"""
         if isinstance(other, Timecode):
-            div_frames = self._frames / other._frames
+            div_frames = int(float(self.frames) / float(other.frames))
         elif isinstance(other, int):
-            div_frames = self._frames / other
+            div_frames = int(float(self.frames) / float(other))
         else:
             raise TimecodeError(
                 'Type %s not supported for arithmetic.' %
                 other.__class__.__name__
             )
 
-        return Timecode(self._framerate, frames=div_frames)
+        return Timecode(self.framerate, frames=div_frames)
+
+    def __truediv__(self, other):
+        """returns new Timecode instance with divided value"""
+        return self.__div__(other)
 
     def __repr__(self):
-        return self.tc_to_string(*self.frames_to_tc(self._frames))
+        return self.tc_to_string(*self.frames_to_tc(self.frames))
 
     @property
     def hrs(self):
-        hrs, mins, secs, frs = self.frames_to_tc(self._frames)
+        hrs, mins, secs, frs = self.frames_to_tc(self.frames)
         return hrs
 
     @property
     def mins(self):
-        hrs, mins, secs, frs = self.frames_to_tc(self._frames)
+        hrs, mins, secs, frs = self.frames_to_tc(self.frames)
         return mins
 
     @property
     def secs(self):
-        hrs, mins, secs, frs = self.frames_to_tc(self._frames)
+        hrs, mins, secs, frs = self.frames_to_tc(self.frames)
         return secs
 
     @property
     def frs(self):
-        hrs, mins, secs, frs = self.frames_to_tc(self._frames)
+        hrs, mins, secs, frs = self.frames_to_tc(self.frames)
         return frs
 
     @property
     def frame_number(self):
         """returns the 0 based frame number of the current timecode instance
         """
-        return self._frames - 1
+        return self.frames - 1
 
     @property
     def float(self):
         """returns the seconds as float
         """
-        return float(self._frames) / float(self._int_framerate)
+        return float(self.frames) / float(self._int_framerate)
 
 
 class TimecodeError(Exception):

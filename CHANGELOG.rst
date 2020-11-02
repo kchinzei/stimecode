@@ -2,6 +2,23 @@
 Changes
 =======
 
+1.3.0
+=====
+
+* **Fix:** Fixed a huge bug in 29.97 NDF and 59.97 NDF calculations introduced
+  in v1.2.3.
+
+* **Fix:** Fixed ``Timecode.framerate`` when it is given as ``23.98``. The
+  ``framerate`` attribute will not be forced to ``24`` and it will stay
+  ``23.98``.
+
+* **Update:** ``Timecode.tc_to_frames()`` method now accepts Timecode instances
+  with possibly different frame rates then the instance itself.
+
+* **Fix:** Fixed ``Timecode.div_frames()`` method.
+
+* **Update:** Test coverage has been increased to 100% (yay!)
+
 1.2.5
 =====
 
