@@ -418,30 +418,10 @@ class TimecodeTester(unittest.TestCase):
         self.assertEqual('00:08:19:23', tc.__str__())
 
     def test_timecode_init_17(self):
-        tc = Timecode('29.97', frames=2589408)
-        self.assertEqual('23:59:59;29', tc.__str__())
-
-    def test_timecode_init_18(self):
-        tc = Timecode('29.97', frames=2589409)
-        self.assertEqual('00:00:00;00', tc.__str__())
-
-    def test_timecode_init_19(self):
-        tc = Timecode('29.97', frames=2589409, force_non_drop_frame=True)
-        self.assertEqual('00:00:00:00', tc.__str__())
-
-    def test_timecode_init_20(self):
-        tc = Timecode('59.94', frames=5178816)
-        self.assertEqual('23:59:59;59', tc.__str__())
-
-    def test_timecode_init_21(self):
-        tc = Timecode('59.94', frames=5178817)
-        self.assertEqual('00:00:00;00', tc.__str__())
-
-    def test_timecode_init_22(self):
         tc = Timecode('25', 421729315)
         self.assertEqual('19:23:14:23', tc.__str__())
 
-    def test_timecode_init_23(self):
+    def test_timecode_init_18(self):
         tc = Timecode('29.97', 421729315)
         self.assertEqual('19:23:14;23', tc.__str__())
         self.assertTrue(tc.drop_frame)
@@ -1214,9 +1194,13 @@ class TimecodeTester(unittest.TestCase):
         tc3 = tc * tc2
         tc4 = tc * 720
         self.assertEqual(224121600, tc3._frames)
-        self.assertEqual("04:09:35:23", tc3.__str__())
+        self.assertEqual("01:59:59:23", tc3.__str__())
         self.assertEqual(224121600, tc4._frames)
-        self.assertEqual("04:09:35:23", tc4.__str__())
+        self.assertEqual("01:59:59:23", tc4.__str__())
+        tc5 = Timecode('23.98', frames=311280 * 720)  # should equal to this amount of frames
+        self.assertEqual("01:59:59:23", tc5.__str__())
+        tc5 = Timecode('23.98', frames=172800)  # should equal to this amount of frames
+        self.assertEqual("01:59:59:23", tc5.__str__())
 
     def test_op_overloads_mult_9(self):
         tc = Timecode('ms', '03:36:09.230')
@@ -1725,3 +1709,44 @@ class TimecodeTester(unittest.TestCase):
         with mock.patch.dict(sys.modules, {'fractions': None}):
             # the coverage should be now 100%
             tc = Timecode('24')
+
+    def test_rollover_for_23_98(self):
+        """test for bug report #33
+        """
+        tc = Timecode('23.98', '23:58:47:00')
+        self.assertEqual(2071849, tc.frames)
+        tc.add_frames(24)
+        self.assertEqual(2071873, tc.frames)
+        self.assertEqual('23:58:48:00', tc.__repr__())
+
+    def test_rollover_for_29_97_1(self):
+        tc = Timecode('29.97', frames=2589408)
+        self.assertEqual('23:59:59;29', tc.__str__())
+
+    def test_rollover_for_29_97_2(self):
+        tc = Timecode('29.97', frames=2589409)
+        self.assertEqual('00:00:00;00', tc.__str__())
+
+    def test_rollover_for_29_97_3(self):
+        tc = Timecode('29.97', frames=2589409, force_non_drop_frame=True)
+        self.assertEqual('23:58:33:18', tc.__str__())
+
+    def test_rollover_for_29_97_4(self):
+        tc = Timecode('29.97', frames=2592001, force_non_drop_frame=True)
+        self.assertEqual('00:00:00:00', tc.__str__())
+
+    def test_rollover_for_59_94_DF_1(self):
+        tc = Timecode('59.94', frames=5178816)
+        self.assertEqual('23:59:59;59', tc.__str__())
+
+    def test_rollover_for_59_94_DF_2(self):
+        tc = Timecode('59.94', frames=5178817)
+        self.assertEqual('00:00:00;00', tc.__str__())
+
+    def test_rollover_for_59_94_NDF_1(self):
+        tc = Timecode('59.94', frames=5184000, force_non_drop_frame=True)
+        self.assertEqual('23:59:59:59', tc.__str__())
+
+    def test_rollover_for_59_94_NDF_2(self):
+        tc = Timecode('59.94', frames=5184001, force_non_drop_frame=True)
+        self.assertEqual('00:00:00:00', tc.__str__())

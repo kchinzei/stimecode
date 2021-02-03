@@ -21,7 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 
 
 class Timecode(object):
@@ -126,7 +126,6 @@ class Timecode(object):
         :param framerate:
         :return:
         """
-
         # Convert rational frame rate to float
         numerator = None
         denominator = None
@@ -260,21 +259,21 @@ class Timecode(object):
 
         :returns str: the string representation of the current time code
         """
-        ffps = float(self.framerate)
-
         if self.drop_frame:
             # Number of frames to drop on the minute marks is the nearest
             # integer to 6% of the framerate
+            ffps = float(self.framerate)
             drop_frames = int(round(ffps * .066666))
         else:
+            ffps = float(self._int_framerate)
             drop_frames = 0
 
-        # Number of frames in an hour
-        frames_per_hour = int(round(ffps * 60 * 60))
-        # Number of frames in a day - timecode rolls over after 24 hours
-        frames_per_24_hours = frames_per_hour * 24
         # Number of frames per ten minutes
         frames_per_10_minutes = int(round(ffps * 60 * 10))
+
+        # Number of frames in a day - timecode rolls over after 24 hours
+        frames_per_24_hours = int(round(ffps * 60 * 60 * 24))
+
         # Number of frames per minute is the round of the framerate * 60 minus
         # the number of dropped frames
         frames_per_minute = int(round(ffps) * 60) - drop_frames
@@ -289,8 +288,7 @@ class Timecode(object):
             d = frame_number // frames_per_10_minutes
             m = frame_number % frames_per_10_minutes
             if m > drop_frames:
-                frame_number += (drop_frames * 9 * d) + \
-                    drop_frames * ((m - drop_frames) // frames_per_minute)
+                frame_number += (drop_frames * 9 * d) + drop_frames * ((m - drop_frames) // frames_per_minute)
             else:
                 frame_number += drop_frames * 9 * d
 

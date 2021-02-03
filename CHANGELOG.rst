@@ -2,6 +2,11 @@
 Changes
 =======
 
+1.3.1
+=====
+
+* **Fix:** Fixed 23.98, 29.97 DF, 29.97 NDF, 59.94 and 59.94 NDF rollover to ``00:00:00:00`` after 24 hours.
+
 1.3.0
 =====
 
