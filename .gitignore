@@ -8,6 +8,6 @@ docs/html/*
 docs/latex/*
 docs/doctrees/*
 docs/source/generated/*
-dist/*
+dist/
 build/*
 include/*

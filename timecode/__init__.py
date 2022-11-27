@@ -21,7 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__version__ = '1.3.1'
+__name__ = "timecode"
+__version__ = "1.3.1"
+__description__ = "SMPTE Time Code Manipulation Library"
+__author__ = "Erkan Ozgur Yilmaz"
+__author_email__ = "eoyilmaz@gmail.com"
+__url__ = "https://github.com/eoyilmaz/timecode"
 
 
 class Timecode(object):
