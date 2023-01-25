@@ -67,11 +67,11 @@ class TimecodeTester(unittest.TestCase):
         tc = Timecode('24', start_timecode=None, frames=12000)
         self.assertIsInstance(tc, Timecode)
 
-    def test_instance_creation_12(self):
+    def test_instance_creation_12_a(self):
         tc = Timecode('23.976')
         self.assertIsInstance(tc, Timecode)
 
-    def test_instance_creation_12(self):
+    def test_instance_creation_12_b(self):
         tc = Timecode('23.98')
         self.assertIsInstance(tc, Timecode)
 
@@ -147,11 +147,11 @@ class TimecodeTester(unittest.TestCase):
         tc = Timecode('ms', 421729315)
         self.assertIsInstance(tc, Timecode)
 
-    def test_instance_creation_31(self):
+    def test_instance_creation_31_a(self):
         tc = Timecode('24000/1000', '00:00:00:00')
         self.assertIsInstance(tc, Timecode)
 
-    def test_instance_creation_31(self):
+    def test_instance_creation_31_b(self):
         tc = Timecode('24000/1001', '00:00:00;00')
         self.assertIsInstance(tc, Timecode)
 
@@ -1451,7 +1451,7 @@ class TimecodeTester(unittest.TestCase):
         self.assertFalse(tc2 >= tc3)
         self.assertTrue(tc4 <= tc5)
 
-    def test_gt_overload(self):
+    def test_gt_overload_a(self):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
         tc3 = Timecode(24, '00:00:00:01')
@@ -1477,7 +1477,7 @@ class TimecodeTester(unittest.TestCase):
         self.assertTrue(tc5 >= tc4)
         self.assertTrue(tc5 > tc4)
 
-    def test_gt_overload(self):
+    def test_gt_overload_b(self):
         tc1 = Timecode(24, '00:00:00:00')
         tc2 = Timecode(24, '00:00:00:00')
         tc3 = Timecode(24, '00:00:00:01')
@@ -1551,7 +1551,6 @@ class TimecodeTester(unittest.TestCase):
 
         with self.assertRaises(ValueError) as cm:
             offset = a - b
-            c = Timecode('25', timecode3) + offset
 
         self.assertEqual(
             str(cm.exception),
@@ -1704,7 +1703,10 @@ class TimecodeTester(unittest.TestCase):
         This is purely done for increasing the code coverage to 100% under
         Python 3
         """
-        import mock
+        try:
+            import mock
+        except ImportError:
+            from unittest import mock
         import sys
         with mock.patch.dict(sys.modules, {'fractions': None}):
             # the coverage should be now 100%
