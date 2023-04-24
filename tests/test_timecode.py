@@ -1065,6 +1065,27 @@ def test_gt_overload_b():
     assert (tc4 > tc5)
 
 
+def test_add_frames_compatibility_to_timecode():
+    tc1 = STimecode("25", "00:00:00:10")
+    tc2 =  Timecode("25", "00:00:00:10")
+    assert 10 == tc1.frame_number
+    assert 11 == tc1.frames
+    assert 10 == tc2.frame_number
+    assert 11 == tc2.frames
+    tc1.add_frames(20)
+    tc2.add_frames(20)
+    assert tc1.frames == tc2.frames
+    tc1.sub_frames(10)
+    tc2.sub_frames(10)
+    assert tc1.frames == tc2.frames
+    tc1.mult_frames(4)
+    tc2.mult_frames(4)
+    assert tc1.frames == tc2.frames
+    tc1.div_frames(7)
+    tc2.div_frames(7)
+    assert tc1.frames == tc2.frames
+    
+
 @pytest.mark.parametrize(
     "args,kwargs,func,tc2", [
         [["24", "-00:00:01:00"], {}, lambda x, y: x == y, 32.4],

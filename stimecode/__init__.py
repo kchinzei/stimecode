@@ -422,6 +422,25 @@ class STimecode(Timecode):
         """devide frame_number by frames"""
         self.frame_number = int(self.frame_number / frames)
 
+    def add_frames(self, frames):
+        """adds/subtracts frames to/from frames
+        """
+        self.add_frame_number(frames)
+
+    def sub_frames(self, frames):
+        """adds/subtracts frames to/from frames
+        """
+        self.sub_frame_number(frames)
+
+    def mult_frames(self, frames):
+        """multiply frames by frames
+        """
+        self.frames = (self.frame_number + self.sign) * frames
+
+    def div_frames(self, frames):
+        """devide frames by frames"""
+        self.frames = int((self.frame_number + self.sign) / frames)
+
     def __eq__(self, other):
         """the overridden equality operator
         """
